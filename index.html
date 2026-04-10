@@ -750,17 +750,24 @@
             showAuthModal();
         }
         
-        // Messages
         function addMessage(user, text) {
-            console.log('addMessage called:', user, text);
+            console.log('=== ADD MESSAGE ===');
+            console.log('User:', user);
+            console.log('Text:', text);
             
-            messages.push({
+            if (!user || !text) {
+                console.error('Invalid message - user or text is empty');
+                return;
+            }
+            
+            const newMsg = {
                 user: user,
                 text: text,
                 time: Date.now()
-            });
+            };
             
-            console.log('Messages array:', messages);
+            messages.push(newMsg);
+            console.log('Messages count:', messages.length);
             
             // Keep only last 100 messages
             if (messages.length > 100) {
@@ -769,7 +776,7 @@
             
             saveMessages();
             renderMessages();
-            console.log('Message added successfully');
+            console.log('=== MESSAGE ADDED ===');
         }
         
         function addSystemMessage(text) {
@@ -784,9 +791,15 @@
         
         function renderMessages() {
             const container = document.getElementById('messages');
+            if (!container) {
+                console.error('Messages container not found!');
+                return;
+            }
+            
+            console.log('Rendering', messages.length, 'messages');
             
             container.innerHTML = messages.map(msg => {
-                const avatar = users[msg.user]?.avatar || msg.user[0] || '?';
+                const avatar = (users[msg.user] && users[msg.user].avatar) || (msg.user && msg.user[0]) || '?';
                 const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 
                 return `
@@ -801,6 +814,7 @@
             }).join('');
             
             container.scrollTop = container.scrollHeight;
+            console.log('Messages rendered');
         }
         
         function escapeHtml(text) {
