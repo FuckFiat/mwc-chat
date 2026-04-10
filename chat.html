@@ -405,11 +405,6 @@
             align-items: stretch;
         }
         
-        .input-container {
-            position: relative;
-            flex: 1;
-        }
-        
         .input-wrapper textarea {
             flex: 1;
             background: var(--bg);
@@ -419,7 +414,6 @@
             font-family: var(--font-mono);
             font-size: 12px;
             padding: 8px;
-            padding-right: 30px;
             resize: none;
             min-height: 36px;
             max-height: 100px;
@@ -444,60 +438,10 @@
             }
         }
         
-        /* Typing dots in input */
-        .input-container {
-            position: relative;
-            flex: 1;
-        }
-        
-        .input-dots {
-            position: absolute;
-            right: 10px;
-            bottom: 12px;
-            display: flex;
-            gap: 3px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .input-wrapper textarea:focus ~ .input-dots {
-            opacity: 1;
-        }
-        
-        .input-dots span {
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: input-dot 1.4s ease-in-out infinite;
-            box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
-        }
-        
-        .input-dots span:nth-child(1) { animation-delay: 0s; }
-        .input-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .input-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes input-dot {
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.3;
-            }
-            30% {
-                transform: translateY(-4px);
-                opacity: 1;
-            }
-        }
-        
         /* Light theme adjustment */
         [data-theme="light"] .input-wrapper textarea:focus {
             border-color: rgba(100, 100, 100, 0.5);
             box-shadow: 0 0 20px rgba(100, 100, 100, 0.3), inset 0 0 10px rgba(100, 100, 100, 0.1);
-        }
-        
-        [data-theme="light"] .input-dots span {
-            background: rgba(100, 100, 100, 0.8);
-            box-shadow: 0 0 6px rgba(100, 100, 100, 0.5);
         }
         
         /* ZeroCo0L special styling */
@@ -865,14 +809,7 @@
             </div>
             <div class="input-area" id="inputArea" style="display: none;">
                 <div class="input-wrapper">
-                    <div class="input-container">
-                        <textarea id="messageInput" placeholder="Сообщение..." rows="1"></textarea>
-                        <div class="input-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
+                    <textarea id="messageInput" placeholder="Сообщение..." rows="1"></textarea>
                     <button class="send-btn" onclick="sendMessage()">→</button>
                 </div>
             </div>
