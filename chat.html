@@ -158,24 +158,6 @@
             flex-shrink: 0;
         }
         
-        .theme-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: var(--font-mono);
-            transition: all 0.2s;
-        }
-        
-        .theme-btn:hover {
-            background: var(--accent);
-            color: #000;
-            border-color: var(--accent);
-        }
-        
         .chat-main {
             flex: 1;
             display: flex;
@@ -222,6 +204,44 @@
         
         .logo:hover {
             color: var(--accent);
+        }
+        
+        .logo-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .font-scale {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+        }
+        
+        .font-scale-btn {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            padding: 2px 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .font-scale-btn:hover {
+            color: var(--accent);
+        }
+        
+        .font-scale-value {
+            color: var(--text-dim);
+            min-width: 30px;
+            text-align: center;
         }
         
         .logo:active {
@@ -325,18 +345,23 @@
             transform: translateX(-60px);
         }
         
-        .swipe-hint {
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 18px;
+        /* Message group (multiple messages from same user) */
+        .message-group {
+            margin-bottom: 12px;
         }
         
-        .message.swiping .swipe-hint {
-            opacity: 1;
+        .message-group .message {
+            margin-bottom: 4px;
+        }
+        
+        .message-group .message:last-child {
+            margin-bottom: 12px;
+        }
+        
+        .message-continuation {
+            margin-top: 2px;
+            padding: 8px 14px 8px 24px;
+            border-left-width: 2px;
         }
         
         .message-header {
@@ -783,7 +808,14 @@
 <body>
     <div class="app">
         <div class="top-bar">
-            <div class="logo" onclick="toggleTheme()" style="cursor: pointer;" title="Переключить тему">⚡ Fucking Miners</div>
+            <div class="logo-left">
+                <div class="logo" onclick="toggleTheme()" style="cursor: pointer;" title="Переключить тему">⚡ Fucking Miners</div>
+                <div class="font-scale">
+                    <button class="font-scale-btn" onclick="changeFontScale(-1)">-</button>
+                    <span class="font-scale-value" id="fontScaleValue">100%</span>
+                    <button class="font-scale-btn" onclick="changeFontScale(1)">+</button>
+                </div>
+            </div>
             <div class="top-bar-right">
                 <div class="connection-status" id="connectionStatus" onclick="toggleOnlinePopover()">
                     <span class="status-indicator"></span>
@@ -863,6 +895,28 @@
         let lastUsers = {};
         let pollInterval = null;
         let currentTheme = 'dark';
+        let fontScale = parseInt(localStorage.getItem('fm_font_scale') || '100');
+        
+        // Font scale
+        function changeFontScale(delta) {
+            fontScale = Math.max(50, Math.min(200, fontScale + delta * 10));
+            localStorage.setItem('fm_font_scale', fontScale);
+            document.getElementById('fontScaleValue').textContent = fontScale + '%';
+            applyFontScale();
+        }
+        
+        function applyFontScale() {
+            const messages = document.getElementById('messages');
+            if (messages) {
+                messages.style.fontSize = (fontScale / 100 * 14) + 'px';
+            }
+        }
+        
+        function loadFontScale() {
+            fontScale = parseInt(localStorage.getItem('fm_font_scale') || '100');
+            document.getElementById('fontScaleValue').textContent = fontScale + '%';
+            applyFontScale();
+        }
         
         // Theme toggle
         function toggleTheme() {
@@ -924,6 +978,7 @@
         
         async function init() {
             loadTheme();
+            loadFontScale();
             const savedUser = localStorage.getItem('fm_currentUser');
             if (savedUser) {
                 currentUser = savedUser;
@@ -1057,12 +1112,6 @@
                              data-msg-id="${msgId}" 
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
-                            <div class="message-reply-action">
-                                <svg class="message-reply-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 10L4 15L9 20"/>
-                                    <path d="M20 4v7a4 4 0 01-4 4H4"/>
-                                </svg>
-                            </div>
                             <div class="message-header">
                                 <span class="message-author ${nickClass} ${zeroAdminClass}" style="${nickStyle}">${msg.user}</span>
                                 ${tagHTML}
@@ -1072,17 +1121,10 @@
                         </div>`;
                 } else {
                     html += `
-                        <div class="message msg-color-${colorClass} ${zeroClass}" 
-                             style="margin-top:4px;padding:6px 14px;background:var(--bg-light);"
+                        <div class="message message-continuation msg-color-${colorClass} ${zeroClass}" 
                              data-msg-id="${msgId}" 
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
-                            <div class="message-reply-action">
-                                <svg class="message-reply-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 10L4 15L9 20"/>
-                                    <path d="M20 4v7a4 4 0 01-4 4H4"/>
-                                </svg>
-                            </div>
                             <div class="message-text">${escapeHtml(msg.text)}</div>
                         </div>`;
                 }
