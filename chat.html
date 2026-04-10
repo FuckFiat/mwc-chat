@@ -813,7 +813,10 @@
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
                             <div class="message-reply-action">
-                                <span class="message-reply-icon">↩️</span>
+                                <svg class="message-reply-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 10L4 15L9 20"/>
+                                    <path d="M20 4v7a4 4 0 01-4 4H4"/>
+                                </svg>
                             </div>
                             <div class="message-header">
                                 <span class="message-author user-color-${colorClass}">${msg.user}</span>
@@ -829,7 +832,10 @@
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
                             <div class="message-reply-action">
-                                <span class="message-reply-icon">↩️</span>
+                                <svg class="message-reply-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 10L4 15L9 20"/>
+                                    <path d="M20 4v7a4 4 0 01-4 4H4"/>
+                                </svg>
                             </div>
                             <div class="message-text">${escapeHtml(msg.text)}</div>
                         </div>`;
@@ -937,15 +943,6 @@
             const quote = text.length > 100 ? text.substring(0, 100) + '...' : text;
             input.value = `> ${user}: ${quote}\n\n`;
             input.focus();
-            
-            // Visual feedback
-            const btn = document.querySelector('.send-btn');
-            if (btn) {
-                btn.textContent = '↩️ Ответить';
-                setTimeout(() => {
-                    btn.textContent = '→';
-                }, 2000);
-            }
         }
         
         function escapeHtml(text) {
