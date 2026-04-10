@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fucking Miners — Чат майнеров</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-card: #111111;
+            --bg-input: #0a0a0a;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --accent: #FFD700;
+            --accent-alt: #FFA500;
+            --online: #4caf50;
+            --border: rgba(255, 215, 0, 0.1);
+        }
+        
+        [data-theme="light"] {
+            --bg: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --text: #1a1a1a;
+            --text-dim: #666666;
+            --accent: #FFD700;
+            --accent-alt: #FFA500;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Mono', 'Consolas', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .theme-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn-theme {
+            padding: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-theme:hover {
+            background: var(--accent);
+            color: #000;
+        }
+        
+        .container {
+            display: flex;
+            height: calc(100vh - 50px);
+        }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--bg);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 3px;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        
+        .message-input {
+            padding: 15px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn-send {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .online-panel {
+            width: 250px;
+            background: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border);
+        }
+        
+        .online-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+        }
+        
+        .online-count {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-left: 10px;
+        }
+        
+        .online-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .online-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .online-user:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .online-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
+            font-size: 14px;
+        }
+        
+        .online-info {
+            flex: 1;
+        }
+        
+        .online-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .online-status {
+            font-size: 11px;
+            color: var(--online);
+        }
+        
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--online);
+            box-shadow: 0 0 5px var(--online);
+        }
+        
+        .user-section {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-status {
+            font-size: 12px;
+            color: var(--online);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            width: 400px;
+            max-width: 90%;
+            border: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-dim);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .modal-footer {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+        
+        .modal-footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .connection-status {
+            font-size: 12px;
+            color: var(--online);
+        }
+        
+        .connection-status.error {
+            color: #ff4444;
+        }
+        
+        @media (max-width: 768px) {
+            .online-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="theme-bar">
+        <button class="btn-theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <span style="color: var(--text-dim); font-size: 12px;">Fucking Miners v2.0</span>
+        <button class="btn-send" onclick="logout()" style="padding: 8px 15px; font-size: 12px; margin-left: auto;">Выход</button>
+    </div>
+    
+    <div class="container">
+        <div class="main">
+            <div class="chat-header">
+                <div>
+                    <div class="chat-title">#fucking-miners</div>
+                </div>
+                <span class="connection-status" id="connectionStatus">● Подключено</span>
+            </div>
+            
+            <div class="messages" id="messages">
+                <div style="text-align: center; color: var(--text-dim); padding: 50px;">
+                    Загрузка сообщений...
+                </div>
+            </div>
+            
+            <div class="message-input">
+                <div class="input-wrapper">
+                    <input type="text" id="messageInput" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
+                    <button class="btn-send" onclick="sendMessage()">→</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="online-panel">
+            <div class="online-header">
+                Онлайн<span class="online-count" id="onlineCount">(0)</span>
+            </div>
+            <div class="online-list" id="onlineList"></div>
+            <div class="user-section">
+                <div class="user-card" onclick="logout()">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Гость</div>
+                        <div class="user-status" id="userStatus">В сети</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Вход в чат</div>
+            <div class="error" id="authError" style="display: none;"></div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>Имя пользователя</label>
+                    <input type="text" id="authUsername" placeholder="Ваш ник" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="authPassword" placeholder="Пароль">
+                </div>
+                <button type="submit" class="btn-submit" id="authButton">Войти</button>
+            </form>
+            <div class="modal-footer">
+                <span id="modalSwitch">Нет аккаунта? <a href="#" onclick="switchAuth()">Регистрация</a></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API URL - VPS server
+        const API_URL = 'http://95.140.148.73:5004/api';
+        
+        // State
+        let currentUser = null;
+        let currentTheme = 'dark';
+        let pollInterval = null;
+        
+        // Initialize
+        async function init() {
+            console.log('=== INIT ===');
+            loadTheme();
+            
+            const savedUser = localStorage.getItem('fm_currentUser');
+            if (savedUser) {
+                currentUser = savedUser;
+                await syncUser();
+                hideAuthModal();
+                startPolling();
+            } else {
+                showAuthModal();
+            }
+            
+            await loadMessages();
+            await loadUsers();
+            console.log('=== INIT COMPLETE ===');
+        }
+        
+        // Theme
+        function loadTheme() {
+            const saved = localStorage.getItem('fm_theme');
+            if (saved) {
+                currentTheme = saved;
+                document.body.dataset.theme = saved;
+            }
+            updateThemeButton();
+        }
+        
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.dataset.theme = currentTheme;
+            localStorage.setItem('fm_theme', currentTheme);
+            updateThemeButton();
+        }
+        
+        function updateThemeButton() {
+            const btn = document.getElementById('themeBtn');
+            btn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        }
+        
+        // API Calls
+        async function apiGet(endpoint) {
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`);
+                const status = document.getElementById('connectionStatus');
+                status.textContent = '● Подключено';
+                status.classList.remove('error');
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                const status = document.getElementById('connectionStatus');
+                status.textContent = '● Ошибка соединения';
+                status.classList.add('error');
+                return null;
+            }
+        }
+        
+        async function apiPost(endpoint, data) {
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return null;
+            }
+        }
+        
+        // Messages
+        async function loadMessages() {
+            const messages = await apiGet('/messages');
+            if (messages) {
+                renderMessages(messages);
+            }
+        }
+        
+        async function sendMessage() {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const result = await apiPost('/messages', {
+                user: currentUser,
+                text: text,
+                time: Date.now()
+            });
+            
+            if (result) {
+                input.value = '';
+                await loadMessages();
+            }
+        }
+        
+        function renderMessages(messages) {
+            const container = document.getElementById('messages');
+            
+            if (!messages || messages.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 50px;">Нет сообщений. Начни первым!</div>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => {
+                const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="message">
+                        <div class="message-header">
+                            <span class="message-author">${msg.user}</span>
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-text">${escapeHtml(msg.text)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Users
+        async function loadUsers() {
+            const users = await apiGet('/users');
+            if (users) {
+                renderOnlineUsers(users);
+            }
+        }
+        
+        async function syncUser() {
+            if (!currentUser) return;
+            
+            await apiPost('/users', {
+                username: currentUser,
+                online: true
+            });
+        }
+        
+        function renderOnlineUsers(users) {
+            const list = document.getElementById('onlineList');
+            const onlineUsers = Object.keys(users).filter(u => users[u].online);
+            
+            document.getElementById('onlineCount').textContent = `(${onlineUsers.length})`;
+            
+            list.innerHTML = onlineUsers.map(user => {
+                const u = users[user];
+                const avatar = u.avatar || user[0];
+                return `
+                    <div class="online-user">
+                        <div class="online-avatar">${avatar}</div>
+                        <div class="online-info">
+                            <div class="online-name">${user}</div>
+                            <div class="online-status">В сети</div>
+                        </div>
+                        <div class="online-dot"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Auth
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+        
+        function hideAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+        
+        function switchAuth() {
+            const title = document.getElementById('modalTitle');
+            const button = document.getElementById('authButton');
+            const switchText = document.getElementById('modalSwitch');
+            
+            if (title.textContent === 'Вход в чат') {
+                title.textContent = 'Регистрация';
+                button.textContent = 'Создать аккаунт';
+                switchText.innerHTML = 'Уже есть аккаунт? <a href="#" onclick="switchAuth()">Войти</a>';
+            } else {
+                title.textContent = 'Вход в чат';
+                button.textContent = 'Войти';
+                switchText.innerHTML = 'Нет аккаунта? <a href="#" onclick="switchAuth()">Регистрация</a>';
+            }
+        }
+        
+        async function handleAuth(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value || '123';
+            const isRegister = document.getElementById('modalTitle').textContent === 'Регистрация';
+            const errorDiv = document.getElementById('authError');
+            
+            if (!username) {
+                errorDiv.textContent = 'Введите имя пользователя';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Check if user exists
+            const users = await apiGet('/users');
+            
+            if (isRegister) {
+                if (users && users[username]) {
+                    errorDiv.textContent = 'Пользователь уже существует';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                // Register
+                await apiPost('/users', {
+                    username: username,
+                    password: hashCode(password),
+                    online: true
+                });
+                
+                currentUser = username;
+                localStorage.setItem('fm_currentUser', username);
+                
+                hideAuthModal();
+                await loadUsers();
+                startPolling();
+            } else {
+                // Login
+                if (!users || !users[username]) {
+                    errorDiv.textContent = 'Пользователь не найден';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (users[username].password !== hashCode(password)) {
+                    errorDiv.textContent = 'Неверный пароль';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                await apiPost(`/users/${username}/online`, { online: true });
+                
+                currentUser = username;
+                localStorage.setItem('fm_currentUser', username);
+                
+                hideAuthModal();
+                await loadUsers();
+                startPolling();
+            }
+            
+            updateUserUI();
+        }
+        
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            }
+            return hash.toString();
+        }
+        
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser;
+                document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+            }
+        }
+        
+        async function logout() {
+            if (currentUser) {
+                await apiPost(`/users/${currentUser}/online`, { online: false });
+            }
+            currentUser = null;
+            localStorage.removeItem('fm_currentUser');
+            stopPolling();
+            showAuthModal();
+        }
+        
+        // Polling
+        function startPolling() {
+            pollInterval = setInterval(async () => {
+                await loadMessages();
+                await loadUsers();
+            }, 1000);
+        }
+        
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+            }
+        }
+        
+        // Init
+        init();
+    </script>
+</body>
+</html>
