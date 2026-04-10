@@ -12,6 +12,7 @@
         }
         
         :root {
+            /* Dark theme (default) */
             --bg: #0f0f14;
             --bg-dark: #0a0a0e;
             --bg-light: #16161e;
@@ -26,6 +27,38 @@
             --mention: #ff9e64;
             --border: #1a1b26;
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+        }
+        
+        [data-theme="black"] {
+            --bg: #000000;
+            --bg-dark: #000000;
+            --bg-light: #0a0a0a;
+            --bg-highlight: #111111;
+            --text: #ffffff;
+            --text-dim: #666666;
+            --text-bright: #ffffff;
+            --accent: #ffffff;
+            --accent-hover: #cccccc;
+            --online: #00ff00;
+            --offline: #333333;
+            --mention: #ffff00;
+            --border: #111111;
+        }
+        
+        [data-theme="white"] {
+            --bg: #ffffff;
+            --bg-dark: #f8f8f8;
+            --bg-light: #ffffff;
+            --bg-highlight: #f0f0f0;
+            --text: #000000;
+            --text-dim: #666666;
+            --text-bright: #333333;
+            --accent: #0066ff;
+            --accent-hover: #0044cc;
+            --online: #00aa00;
+            --offline: #999999;
+            --mention: #ff6600;
+            --border: #e0e0e0;
         }
         
         body {
@@ -120,6 +153,25 @@
         .logout-btn:hover {
             background: var(--bg-highlight);
             color: var(--text);
+        }
+        
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
         }
         
         /* Left sidebar - Navigation */
@@ -772,6 +824,9 @@
                 <div class="logo">⚡ Fucking Miners</div>
             </div>
             <div class="top-bar-right">
+                <button class="theme-toggle" onclick="cycleTheme()" id="themeBtn" title="Переключить тему">
+                    ⚫
+                </button>
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator"></span>
                     <span>Подключено</span>
@@ -907,10 +962,35 @@
         let currentChannel = 'fucking-miners';
         let replyingTo = null;
         let privateRecipient = null;
+        let currentTheme = 'dark';
+        
+        // Theme cycling
+        const themes = ['dark', 'black', 'white'];
+        const themeNames = { 'dark': '⚫', 'black': '⬛', 'white': '⚪' };
+        
+        function cycleTheme() {
+            const currentIndex = themes.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            currentTheme = themes[nextIndex];
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('fm_theme', currentTheme);
+            document.getElementById('themeBtn').textContent = themeNames[currentTheme];
+            console.log('Theme:', currentTheme);
+        }
+        
+        function loadTheme() {
+            const saved = localStorage.getItem('fm_theme');
+            if (saved && themes.includes(saved)) {
+                currentTheme = saved;
+                document.body.setAttribute('data-theme', currentTheme);
+                document.getElementById('themeBtn').textContent = themeNames[currentTheme];
+            }
+        }
         
         // Initialize
         async function init() {
             console.log('=== INIT ===');
+            loadTheme();
             
             const savedUser = localStorage.getItem('fm_currentUser');
             if (savedUser) {
