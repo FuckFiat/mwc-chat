@@ -32,7 +32,7 @@
         [data-theme="light"] {
             --bg: #f5f5f5;
             --bg-dark: #ffffff;
-            --bg-light: #fafafa;
+            --bg-light: #ffffff;
             --bg-highlight: #e8e8e8;
             --text: #1a1a1a;
             --text-dim: #666666;
@@ -44,6 +44,23 @@
             --mention: #ff6600;
             --border: #dddddd;
         }
+        
+        /* More contrast for light theme */
+        [data-theme="light"] .message {
+            background: #ffffff;
+            border: 1px solid #ddd;
+        }
+        
+        [data-theme="light"] .msg-color-0 { border-left-color: #2196F3; background: rgba(33, 150, 243, 0.08); }
+        [data-theme="light"] .msg-color-1 { border-left-color: #9C27B0; background: rgba(156, 39, 176, 0.08); }
+        [data-theme="light"] .msg-color-2 { border-left-color: #E91E63; background: rgba(233, 30, 99, 0.08); }
+        [data-theme="light"] .msg-color-3 { border-left-color: #4CAF50; background: rgba(76, 175, 80, 0.08); }
+        [data-theme="light"] .msg-color-4 { border-left-color: #FF9800; background: rgba(255, 152, 0, 0.08); }
+        [data-theme="light"] .msg-color-5 { border-left-color: #8BC34A; background: rgba(139, 195, 74, 0.08); }
+        [data-theme="light"] .msg-color-6 { border-left-color: #673AB7; background: rgba(103, 58, 183, 0.08); }
+        [data-theme="light"] .msg-color-7 { border-left-color: #009688; background: rgba(0, 150, 136, 0.08); }
+        [data-theme="light"] .msg-color-8 { border-left-color: #F50057; background: rgba(245, 0, 87, 0.08); }
+        [data-theme="light"] .msg-color-9 { border-left-color: #3F51B5; background: rgba(63, 81, 181, 0.08); }
         
         body {
             font-family: var(--font-mono);
@@ -81,17 +98,18 @@
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             font-family: var(--font-mono);
-            margin-right: 10px;
+            transition: all 0.2s;
         }
         
         .theme-btn:hover {
             background: var(--accent);
             color: #000;
+            border-color: var(--accent);
         }
         
         .chat-main {
@@ -570,9 +588,11 @@
 <body>
     <div class="app">
         <div class="top-bar">
-            <div class="logo">⚡ Fucking Miners</div>
-            <div class="top-bar-right">
+            <div class="top-bar-left" style="display: flex; align-items: center; gap: 10px;">
                 <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="Переключить тему">🌙</button>
+                <div class="logo">⚡ Fucking Miners</div>
+            </div>
+            <div class="top-bar-right">
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator"></span>
                     <span>Подключено</span>
