@@ -12,19 +12,20 @@
         }
         
         :root {
-            --bg: #0f0f14;
-            --bg-dark: #0a0a0e;
-            --bg-light: #16161e;
-            --bg-highlight: #1a1b26;
-            --text: #c0caf5;
-            --text-dim: #414868;
-            --text-bright: #a9b1d6;
-            --accent: #7aa2f7;
-            --accent-hover: #7dcfff;
-            --online: #9ece6a;
-            --offline: #565f89;
-            --mention: #ff9e64;
-            --border: #1a1b26;
+            /* Dark gray theme */
+            --bg: #0d0d0d;
+            --bg-dark: #080808;
+            --bg-light: #151515;
+            --bg-highlight: #1a1a1a;
+            --text: #e0e0e0;
+            --text-dim: #555555;
+            --text-bright: #cccccc;
+            --accent: #808080;
+            --accent-hover: #999999;
+            --online: #66bb6a;
+            --offline: #444444;
+            --mention: #ff9800;
+            --border: #222222;
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
         }
         
@@ -313,6 +314,43 @@
             background: var(--bg-light);
             border-radius: 6px;
             border-left: 3px solid var(--accent);
+            position: relative;
+            touch-action: pan-y;
+            user-select: none;
+            transition: transform 0.2s, background 0.2s;
+        }
+        
+        .message.swiping {
+            background: var(--bg-highlight);
+        }
+        
+        .message.swiped {
+            transform: translateX(60px);
+            background: var(--accent);
+        }
+        
+        .message-swipe-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: linear-gradient(90deg, transparent, var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        
+        .message.swiping .message-swipe-indicator {
+            opacity: 0.5;
+        }
+        
+        .message-swipe-icon {
+            font-size: 20px;
+            color: var(--text);
         }
         
         /* Input area */
@@ -531,13 +569,13 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.9);
-            z-index: 100;
+            z-index: 1000;
             align-items: center;
             justify-content: center;
         }
         
         .modal.active {
-            display: flex;
+            display: flex !important;
         }
         
         .modal-content {
@@ -1234,11 +1272,24 @@
         
         // Auth
         function showAuthModal() {
-            document.getElementById('authModal').classList.add('active');
+            console.log('showAuthModal called');
+            const modal = document.getElementById('authModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+                console.log('Modal shown');
+            } else {
+                console.error('Modal element not found');
+            }
         }
         
         function hideAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
+            console.log('hideAuthModal called');
+            const modal = document.getElementById('authModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
         
         function switchAuth() {
