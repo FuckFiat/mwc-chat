@@ -12,7 +12,6 @@
         }
         
         :root {
-            /* Dark gray theme */
             --bg: #0d0d0d;
             --bg-dark: #080808;
             --bg-light: #151515;
@@ -37,7 +36,6 @@
             overflow: hidden;
         }
         
-        /* Main Layout - 3 columns */
         .app {
             display: grid;
             grid-template-columns: 200px 1fr 220px;
@@ -45,7 +43,6 @@
             height: 100vh;
         }
         
-        /* Top bar */
         .top-bar {
             grid-column: 1 / -1;
             background: var(--bg-dark);
@@ -57,14 +54,8 @@
             font-size: 12px;
         }
         
-        .top-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
         .logo {
-            color: var(--accent);
+            color: var(--text);
             font-weight: 600;
             font-size: 14px;
         }
@@ -82,7 +73,6 @@
             cursor: pointer;
             padding: 4px 10px;
             border-radius: 4px;
-            transition: background 0.2s;
         }
         
         .user-info:hover {
@@ -93,7 +83,7 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -115,7 +105,6 @@
             font-size: 11px;
             cursor: pointer;
             font-family: var(--font-mono);
-            transition: all 0.2s;
         }
         
         .logout-btn:hover {
@@ -123,13 +112,11 @@
             color: var(--text);
         }
         
-        /* Left sidebar - Navigation */
         .sidebar-left {
             background: var(--bg-dark);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
         
         .nav-section {
@@ -152,7 +139,6 @@
             padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s;
             font-size: 12px;
         }
         
@@ -162,95 +148,12 @@
         
         .nav-item.active {
             background: var(--bg-light);
-            color: var(--text-bright);
         }
         
-        .nav-hotkey {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-left: auto;
-        }
-        
-        .nav-badge {
-            background: var(--mention);
-            color: #000;
-            font-size: 10px;
-            padding: 1px 6px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-        
-        .streams {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px;
-        }
-        
-        .stream-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 12px;
-        }
-        
-        .stream-item:hover {
-            background: var(--bg-highlight);
-        }
-        
-        .stream-item.active {
-            background: var(--bg-light);
-        }
-        
-        .stream-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-        }
-        
-        .stream-name {
-            flex: 1;
-        }
-        
-        .stream-count {
-            font-size: 10px;
-            color: var(--mention);
-            background: rgba(255, 158, 100, 0.2);
-            padding: 1px 6px;
-            border-radius: 10px;
-        }
-        
-        .search-box {
-            padding: 8px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 6px 10px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text);
-            font-size: 11px;
-            font-family: var(--font-mono);
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
-        /* Main chat area */
         .chat-main {
             display: flex;
             flex-direction: column;
             background: var(--bg);
-            overflow: hidden;
         }
         
         .chat-header {
@@ -265,12 +168,7 @@
         .chat-stream-name {
             font-size: 14px;
             font-weight: 600;
-            color: var(--accent);
-        }
-        
-        .chat-topic {
-            font-size: 12px;
-            color: var(--text-dim);
+            color: var(--text);
         }
         
         .messages-container {
@@ -279,15 +177,19 @@
             padding: 15px;
         }
         
-        .message-group {
-            margin-bottom: 20px;
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
         }
         
-        .message-group-header {
+        .message-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .message-author {
@@ -305,55 +207,8 @@
             font-size: 13px;
             line-height: 1.6;
             color: var(--text-bright);
-            padding-left: 0;
         }
         
-        .message {
-            margin-bottom: 12px;
-            padding: 10px 12px;
-            background: var(--bg-light);
-            border-radius: 6px;
-            border-left: 3px solid var(--accent);
-            position: relative;
-            touch-action: pan-y;
-            user-select: none;
-            transition: transform 0.2s, background 0.2s;
-        }
-        
-        .message.swiping {
-            background: var(--bg-highlight);
-        }
-        
-        .message.swiped {
-            transform: translateX(60px);
-            background: var(--accent);
-        }
-        
-        .message-swipe-indicator {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 60px;
-            background: linear-gradient(90deg, transparent, var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-        }
-        
-        .message.swiping .message-swipe-indicator {
-            opacity: 0.5;
-        }
-        
-        .message-swipe-icon {
-            font-size: 20px;
-            color: var(--text);
-        }
-        
-        /* Input area */
         .input-area {
             background: var(--bg-dark);
             border-top: 1px solid var(--border);
@@ -377,7 +232,6 @@
             padding: 10px;
             resize: none;
             min-height: 60px;
-            max-height: 150px;
         }
         
         .input-wrapper textarea:focus {
@@ -395,33 +249,17 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
         
         .send-btn:hover {
             background: var(--accent-hover);
         }
         
-        .input-hint {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 5px;
-        }
-        
-        .input-hint kbd {
-            background: var(--bg-highlight);
-            padding: 1px 5px;
-            border-radius: 3px;
-            font-size: 10px;
-        }
-        
-        /* Right sidebar - Users */
         .sidebar-right {
             background: var(--bg-dark);
             border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
         
         .users-header {
@@ -429,29 +267,6 @@
             border-bottom: 1px solid var(--border);
             font-size: 12px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .users-count {
-            color: var(--text-dim);
-            font-weight: 400;
-        }
-        
-        .users-search {
-            padding: 8px;
-        }
-        
-        .users-search input {
-            width: 100%;
-            padding: 6px 10px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text);
-            font-size: 11px;
-            font-family: var(--font-mono);
         }
         
         .users-list {
@@ -467,7 +282,6 @@
             padding: 8px 10px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s;
             font-size: 12px;
         }
         
@@ -479,17 +293,13 @@
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
             color: #000;
-        }
-        
-        .user-info-small {
-            flex: 1;
         }
         
         .user-name-small {
@@ -501,10 +311,6 @@
             color: var(--online);
         }
         
-        .user-status-small.offline {
-            color: var(--text-dim);
-        }
-        
         .status-dot {
             width: 8px;
             height: 8px;
@@ -512,64 +318,16 @@
             background: var(--online);
         }
         
-        .status-dot.offline {
-            background: var(--text-dim);
-        }
-        
-        /* Connection status */
-        .connection-status {
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .status-indicator {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--online);
-        }
-        
-        .status-indicator.error {
-            background: #f7768e;
-        }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .app {
-                grid-template-columns: 1fr;
-            }
-            .sidebar-left, .sidebar-right {
-                display: none;
-            }
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-        
         /* Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+            z-index: 10000;
             align-items: center;
             justify-content: center;
         }
@@ -591,7 +349,7 @@
             text-align: center;
             font-size: 20px;
             margin-bottom: 20px;
-            color: var(--accent);
+            color: var(--text);
         }
         
         .form-group {
@@ -604,7 +362,6 @@
             font-size: 11px;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
         .form-group input {
@@ -634,7 +391,6 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
         }
         
         .btn-submit:hover {
@@ -654,13 +410,30 @@
         }
         
         .error {
-            color: #f7768e;
+            color: #f44;
             text-align: center;
             margin: 10px 0;
             font-size: 12px;
         }
         
-        /* Empty state */
+        .connection-status {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--online);
+        }
+        
+        .status-indicator.error {
+            background: #f44;
+        }
+        
         .empty-state {
             text-align: center;
             color: var(--text-dim);
@@ -668,250 +441,69 @@
             font-size: 13px;
         }
         
-        /* Reply styles */
-        .message {
-            position: relative;
-        }
-        
-        .message:hover .message-actions {
-            opacity: 1;
-        }
-        
-        .message-actions {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .message-action-btn {
-            background: var(--bg-highlight);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 10px;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-family: var(--font-mono);
-        }
-        
-        .message-action-btn:hover {
-            background: var(--accent);
-            color: #000;
-        }
-        
-        .reply-container {
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px;
-            margin-bottom: 10px;
-            display: none;
-        }
-        
-        .reply-container.active {
-            display: block;
-        }
-        
-        .reply-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .reply-to {
-            font-size: 11px;
-            color: var(--accent);
-        }
-        
-        .reply-close {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .reply-preview {
-            font-size: 12px;
-            color: var(--text-dim);
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .reply-quote {
-            border-left: 2px solid var(--accent);
-            padding-left: 8px;
-            margin-bottom: 8px;
-            color: var(--text-dim);
-            font-size: 12px;
-        }
-        
-        .reply-quote-author {
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .private-badge {
-            background: var(--mention);
-            color: #000;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
-        
-        /* Context menu */
-        .context-menu {
-            position: fixed;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 4px;
-            z-index: 1000;
-            display: none;
-            min-width: 150px;
-        }
-        
-        .context-menu.active {
-            display: block;
-        }
-        
-        .context-menu-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .context-menu-item:hover {
-            background: var(--bg-highlight);
-        }
-        
-        .context-menu-icon {
-            font-size: 14px;
+        @media (max-width: 1024px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- Top Bar -->
         <div class="top-bar">
-            <div class="top-bar-left">
-                <div class="logo">⚡ Fucking Miners</div>
-            </div>
+            <div class="logo">⚡ Fucking Miners</div>
             <div class="top-bar-right">
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator"></span>
                     <span>Подключено</span>
                 </div>
-                <div class="user-info" onclick="logout()">
+                <div class="user-info" id="userInfoBox">
                     <div class="user-avatar" id="userAvatar">?</div>
                     <div class="user-name" id="userName">Гость</div>
                 </div>
-                <button class="logout-btn" onclick="logout()">Выход</button>
+                <button class="logout-btn" id="logoutBtn" style="display: none;">Выход</button>
             </div>
         </div>
         
-        <!-- Left Sidebar -->
         <div class="sidebar-left">
             <div class="nav-section">
                 <div class="nav-title">Навигация</div>
-                <div class="nav-item active" onclick="setChannel('all')" id="nav-all">
+                <div class="nav-item active">
                     <span>📋</span>
                     <span>Все сообщения</span>
-                    <span class="nav-hotkey">[a]</span>
                 </div>
-                <div class="nav-item" onclick="setChannel('private')" id="nav-private">
-                    <span>🔒</span>
-                    <span>Личные</span>
-                    <span class="nav-hotkey">[p]</span>
-                </div>
-                <div class="nav-item" onclick="setChannel('mentions')" id="nav-mentions">
-                    <span>🔔</span>
-                    <span>Упоминания</span>
-                    <span class="nav-hotkey">[@]</span>
-                </div>
-            </div>
-            
-            <div class="streams">
-                <div class="nav-title">Каналы</div>
-                <div class="stream-item active" onclick="setChannel('fucking-miners')" id="stream-fucking-miners">
-                    <div class="stream-dot"></div>
-                    <div class="stream-name">fucking-miners</div>
-                    <div class="stream-count" id="unreadCount">0</div>
-                </div>
-                <div class="stream-item" onclick="setChannel('general')" id="stream-general">
-                    <div class="stream-dot"></div>
-                    <div class="stream-name">general</div>
-                </div>
-                <div class="stream-item" onclick="setChannel('mining')" id="stream-mining">
-                    <div class="stream-dot"></div>
-                    <div class="stream-name">mining</div>
-                </div>
-                <div class="stream-item" onclick="setChannel('trading')" id="stream-trading">
-                    <div class="stream-dot"></div>
-                    <div class="stream-name">trading</div>
-                </div>
-            </div>
-            
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Поиск [q]">
             </div>
         </div>
         
-        <!-- Main Chat -->
         <div class="chat-main">
             <div class="chat-header">
-                <div class="chat-stream-name" id="channelName">#fucking-miners</div>
-                <div class="chat-topic" id="channelTopic">Общий чат майнеров</div>
+                <div class="chat-stream-name">#fucking-miners</div>
             </div>
             
             <div class="messages-container" id="messages">
                 <div class="empty-state">Загрузка сообщений...</div>
             </div>
             
-            <div class="input-area">
-                <div class="reply-container" id="replyContainer">
-                    <div class="reply-header">
-                        <div class="reply-to">Ответ <span id="replyToUser"></span></div>
-                        <button class="reply-close" onclick="cancelReply()">×</button>
-                    </div>
-                    <div class="reply-preview" id="replyPreview"></div>
-                </div>
+            <div class="input-area" id="inputArea" style="display: none;">
                 <div class="input-wrapper">
                     <textarea id="messageInput" placeholder="Напишите сообщение..." rows="2"></textarea>
                     <button class="send-btn" onclick="sendMessage()">Отправить</button>
                 </div>
-                <div class="input-hint">
-                    <kbd>Enter</kbd> — отправить · <kbd>Shift+Enter</kbd> — новая строка · Клик правой кнопкой — ответить
-                </div>
             </div>
         </div>
         
-        <!-- Right Sidebar -->
         <div class="sidebar-right">
             <div class="users-header">
                 Пользователи
-                <span class="users-count" id="onlineCount">(0)</span>
-            </div>
-            <div class="users-search">
-                <input type="text" placeholder="Поиск [w]" id="userSearch">
+                <span id="onlineCount">(0)</span>
             </div>
             <div class="users-list" id="usersList"></div>
         </div>
     </div>
     
-    <!-- Auth Modal -->
     <div class="modal" id="authModal">
         <div class="modal-content">
             <div class="modal-title" id="modalTitle">Вход в чат</div>
@@ -919,10 +511,10 @@
             <form id="authForm" onsubmit="handleAuth(event)">
                 <div class="form-group">
                     <label>Имя пользователя</label>
-                    <input type="text" id="authUsername" placeholder="Ваш ник" required>
+                    <input type="text" id="authUsername" placeholder="Ваш ник" required autofocus>
                 </div>
                 <div class="form-group">
-                    <label>Пароль</label>
+                    <label>Пароль (опционально)</label>
                     <input type="password" id="authPassword" placeholder="Пароль">
                 </div>
                 <button type="submit" class="btn-submit" id="authButton">Войти</button>
@@ -934,27 +526,24 @@
     </div>
 
     <script>
-        // API URL
         const API_URL = 'http://95.140.148.73:5004/api';
-        
-        // State
         let currentUser = null;
-        let pollInterval = null;
         let lastMessages = [];
         let lastUsers = {};
-        let currentChannel = 'fucking-miners';
-        let replyingTo = null;
-        let privateRecipient = null;
+        let pollInterval = null;
         
-        // Initialize
+        // Init
         async function init() {
             console.log('=== INIT ===');
             
+            // Check saved user
             const savedUser = localStorage.getItem('fm_currentUser');
+            console.log('Saved user:', savedUser);
+            
             if (savedUser) {
                 currentUser = savedUser;
                 await syncUser();
-                hideAuthModal();
+                showChat();
                 startPolling();
             } else {
                 showAuthModal();
@@ -963,129 +552,54 @@
             await loadMessages();
             await loadUsers();
             
-            // Keyboard shortcuts
-            document.addEventListener('keydown', handleKeyboard);
-            document.getElementById('messageInput').addEventListener('keydown', handleInputKey);
-            
-            // Context menu
-            document.addEventListener('contextmenu', handleContextMenu);
-            document.addEventListener('click', hideContextMenu);
-            
             console.log('=== INIT COMPLETE ===');
         }
         
-        // Context menu for replies
-        function handleContextMenu(e) {
-            const messageEl = e.target.closest('.message');
-            if (!messageEl) return;
-            
-            e.preventDefault();
-            
-            const messageId = messageEl.dataset.id;
-            const author = messageEl.dataset.author;
-            const text = messageEl.dataset.text;
-            
-            showContextMenu(e.clientX, e.clientY, {
-                id: messageId,
-                author: author,
-                text: text
-            });
+        // Show auth modal
+        function showAuthModal() {
+            console.log('Showing auth modal');
+            document.getElementById('authModal').classList.add('active');
+            document.getElementById('inputArea').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
         }
         
-        function showContextMenu(x, y, data) {
-            let menu = document.getElementById('contextMenu');
-            if (!menu) {
-                menu = document.createElement('div');
-                menu.id = 'contextMenu';
-                menu.className = 'context-menu';
-                document.body.appendChild(menu);
-            }
-            
-            menu.innerHTML = `
-                <div class="context-menu-item" onclick="replyToMessage('${data.id}', '${data.author}', '${data.text}')">
-                    <span class="context-menu-icon">↩️</span>
-                    <span>Ответить</span>
-                </div>
-                <div class="context-menu-item" onclick="replyPrivate('${data.author}')">
-                    <span class="context-menu-icon">🔒</span>
-                    <span>Личное сообщение</span>
-                </div>
-                <div class="context-menu-item" onclick="copyMessage('${data.text}')">
-                    <span class="context-menu-icon">📋</span>
-                    <span>Копировать</span>
-                </div>
-            `;
-            
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
-            menu.classList.add('active');
+        // Hide auth modal
+        function hideAuthModal() {
+            console.log('Hiding auth modal');
+            document.getElementById('authModal').classList.remove('active');
+            document.getElementById('inputArea').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
         }
         
-        function hideContextMenu() {
-            const menu = document.getElementById('contextMenu');
-            if (menu) {
-                menu.classList.remove('active');
+        // Show chat
+        function showChat() {
+            console.log('Showing chat for:', currentUser);
+            hideAuthModal();
+            updateUserUI();
+        }
+        
+        // Update user UI
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser;
+                document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
             }
         }
         
-        function replyToMessage(id, author, text) {
-            replyingTo = { id, author, text };
-            document.getElementById('replyContainer').classList.add('active');
-            document.getElementById('replyToUser').textContent = author;
-            document.getElementById('replyPreview').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
-            document.getElementById('messageInput').focus();
-            hideContextMenu();
-        }
-        
-        function cancelReply() {
-            replyingTo = null;
-            document.getElementById('replyContainer').classList.remove('active');
-        }
-        
-        function replyPrivate(author) {
-            privateRecipient = author;
-            setChannel('private');
-            document.querySelector('.chat-topic').textContent = `Личные с ${author}`;
-            document.getElementById('messageInput').placeholder = `Сообщение для ${author}...`;
-            hideContextMenu();
-        }
-        
-        function copyMessage(text) {
-            navigator.clipboard.writeText(text);
-            hideContextMenu();
-        }
-        
-        // Keyboard shortcuts
-        function handleKeyboard(e) {
-            if (e.key === 'q' && !e.target.matches('input, textarea')) {
-                e.preventDefault();
-                document.querySelector('.search-input').focus();
-            }
-        }
-        
-        function handleInputKey(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }
-        
-        // API Calls
+        // API calls
         async function apiGet(endpoint) {
             try {
-                const response = await fetch(`${API_URL}${endpoint}`);
-                updateConnectionStatus(true);
+                const response = await fetch(API_URL + endpoint);
                 return await response.json();
             } catch (error) {
                 console.error('API Error:', error);
-                updateConnectionStatus(false);
                 return null;
             }
         }
         
         async function apiPost(endpoint, data) {
             try {
-                const response = await fetch(`${API_URL}${endpoint}`, {
+                const response = await fetch(API_URL + endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -1097,29 +611,63 @@
             }
         }
         
-        function updateConnectionStatus(connected) {
-            const status = document.getElementById('connectionStatus');
-            if (connected) {
-                status.innerHTML = '<span class="status-indicator"></span><span>Подключено</span>';
-            } else {
-                status.innerHTML = '<span class="status-indicator error"></span><span>Ошибка</span>';
-            }
+        // Sync user
+        async function syncUser() {
+            if (!currentUser) return;
+            await apiPost('/users', { username: currentUser, online: true });
         }
         
-        // Messages
+        // Load messages
         async function loadMessages() {
             const messages = await apiGet('/messages');
             if (messages && JSON.stringify(messages) !== JSON.stringify(lastMessages)) {
                 lastMessages = messages;
                 renderMessages(messages);
-                updateUnreadCount(messages.length);
             }
         }
         
-        function updateUnreadCount(count) {
-            document.getElementById('unreadCount').textContent = count > 0 ? count : '';
+        // Render messages
+        function renderMessages(messages) {
+            const container = document.getElementById('messages');
+            
+            if (!messages || messages.length === 0) {
+                container.innerHTML = '<div class="empty-state">Нет сообщений. Начни первым!</div>';
+                return;
+            }
+            
+            let html = '';
+            let lastUser = null;
+            
+            messages.forEach((msg, i) => {
+                const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                
+                if (msg.user !== lastUser) {
+                    if (i > 0) html += '</div>';
+                    html += `
+                        <div class="message">
+                            <div class="message-header">
+                                <span class="message-author">${msg.user}</span>
+                                <span class="message-time">${time}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                    `;
+                } else {
+                    html += `<div class="message" style="margin-top: 4px; padding: 8px 12px; background: var(--bg-light);"><div class="message-text">${escapeHtml(msg.text)}</div></div>`;
+                }
+                lastUser = msg.user;
+            });
+            
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
         }
         
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Send message
         async function sendMessage() {
             if (!currentUser) {
                 showAuthModal();
@@ -1143,55 +691,7 @@
             }
         }
         
-        function renderMessages(messages) {
-            const container = document.getElementById('messages');
-            
-            if (!messages || messages.length === 0) {
-                container.innerHTML = '<div class="empty-state">Нет сообщений. Начни первым!</div>';
-                return;
-            }
-            
-            // Group by user
-            let html = '';
-            let lastUser = null;
-            
-            messages.forEach((msg, index) => {
-                const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                const isNewGroup = msg.user !== lastUser;
-                
-                if (isNewGroup) {
-                    if (index > 0) html += '</div>';
-                    html += `
-                        <div class="message">
-                            <div class="message-group-header">
-                                <span class="message-author">${msg.user}</span>
-                                <span class="message-time">${time}</span>
-                            </div>
-                            <div class="message-text">${escapeHtml(msg.text)}</div>
-                    `;
-                } else {
-                    html += `<div class="message-text" style="margin-top: 6px;">${escapeHtml(msg.text)}</div>`;
-                }
-                
-                lastUser = msg.user;
-            });
-            
-            container.innerHTML = html;
-            
-            // Scroll to bottom
-            const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 100;
-            if (isScrolledToBottom) {
-                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-            }
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // Users
+        // Load users
         async function loadUsers() {
             const users = await apiGet('/users');
             if (users && JSON.stringify(users) !== JSON.stringify(lastUsers)) {
@@ -1200,11 +700,7 @@
             }
         }
         
-        async function syncUser() {
-            if (!currentUser) return;
-            await apiPost('/users', { username: currentUser, online: true });
-        }
-        
+        // Render users
         function renderUsers(users) {
             const list = document.getElementById('usersList');
             const onlineUsers = Object.keys(users).filter(u => users[u].online);
@@ -1215,83 +711,16 @@
                 const u = users[user];
                 const avatar = u.avatar || user[0];
                 return `
-                    <div class="user-item" onclick="startPrivate('${user}')">
+                    <div class="user-item">
                         <div class="user-avatar-small">${avatar}</div>
-                        <div class="user-info-small">
-                            <div class="user-name-small">${user}</div>
-                            <div class="user-status-small">В сети</div>
-                        </div>
+                        <div class="user-name-small">${user}</div>
                         <div class="status-dot"></div>
                     </div>
                 `;
             }).join('');
         }
         
-        // Channel navigation
-        let currentChannel = 'fucking-miners';
-        
-        function setChannel(channel) {
-            currentChannel = channel;
-            
-            // Update active states
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.stream-item').forEach(el => el.classList.remove('active'));
-            
-            const navItem = document.getElementById('nav-' + channel.replace(/-/g, ''));
-            const streamItem = document.getElementById('stream-' + channel.replace(/-/g, ''));
-            
-            if (navItem) navItem.classList.add('active');
-            if (streamItem) streamItem.classList.add('active');
-            
-            // Update header
-            const headerNames = {
-                'fucking-miners': '#fucking-miners',
-                'general': '#general',
-                'mining': '#mining',
-                'trading': '#trading',
-                'private': '🔒 Личные',
-                'all': '📋 Все сообщения',
-                'mentions': '🔔 Упоминания'
-            };
-            
-            document.querySelector('.chat-stream-name').textContent = headerNames[channel] || channel;
-            
-            // Load messages for channel
-            loadMessages();
-        }
-        
-        // Private messages
-        function startPrivate(username) {
-            setChannel('private');
-            document.querySelector('.chat-topic').textContent = `Личные с ${username}`;
-            document.getElementById('messageInput').placeholder = `Сообщение для ${username}...`;
-            
-            // Store recipient
-            window.privateRecipient = username;
-        }
-        
         // Auth
-        function showAuthModal() {
-            console.log('showAuthModal called');
-            const modal = document.getElementById('authModal');
-            if (modal) {
-                modal.classList.add('active');
-                modal.style.display = 'flex';
-                console.log('Modal shown');
-            } else {
-                console.error('Modal element not found');
-            }
-        }
-        
-        function hideAuthModal() {
-            console.log('hideAuthModal called');
-            const modal = document.getElementById('authModal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.style.display = 'none';
-            }
-        }
-        
         function switchAuth() {
             const title = document.getElementById('modalTitle');
             const button = document.getElementById('authButton');
@@ -1312,52 +741,40 @@
             e.preventDefault();
             
             const username = document.getElementById('authUsername').value.trim();
-            let password = document.getElementById('authPassword').value || '';
+            const password = document.getElementById('authPassword').value || 'default';
             const isRegister = document.getElementById('modalTitle').textContent === 'Регистрация';
             const errorDiv = document.getElementById('authError');
+            const hashedPassword = hashCode(password);
             
-            // Хешируем пароль (даже пустой)
-            const hashedPassword = hashCode(password || 'default');
+            console.log('Auth attempt:', { username, isRegister });
             
-            if (!username) {
-                errorDiv.textContent = 'Введите имя пользователя';
+            if (!username || username.length < 2) {
+                errorDiv.textContent = 'Минимум 2 символа';
                 errorDiv.style.display = 'block';
                 return;
             }
             
-            if (username.length < 2) {
-                errorDiv.textContent = 'Имя должно быть минимум 2 символа';
-                errorDiv.style.display = 'block';
-                return;
-            }
+            errorDiv.style.display = 'none';
             
             const users = await apiGet('/users');
             
             if (isRegister) {
+                // Register
                 if (users && users[username]) {
                     errorDiv.textContent = 'Пользователь уже существует';
                     errorDiv.style.display = 'block';
                     return;
                 }
                 
-                // Регистрация с хешированным паролем
-                await apiPost('/users', {
-                    username: username,
-                    password: hashedPassword,
-                    online: true
-                });
+                await apiPost('/users', { username, password: hashedPassword, online: true });
                 
                 currentUser = username;
                 localStorage.setItem('fm_currentUser', username);
-                localStorage.setItem('fm_password', hashedPassword); // Сохраняем хеш
-                
-                hideAuthModal();
-                await loadUsers();
+                showChat();
                 startPolling();
                 
-                console.log('Registered:', username, 'Hash:', hashedPassword);
             } else {
-                // Вход
+                // Login
                 if (!users || !users[username]) {
                     errorDiv.textContent = 'Пользователь не найден';
                     errorDiv.style.display = 'block';
@@ -1365,36 +782,24 @@
                 }
                 
                 const storedPassword = users[username].password;
-                console.log('Login attempt:', username, 'Input hash:', hashedPassword, 'Stored:', storedPassword);
                 
-                // Проверяем пароль: либо совпадает хеш, либо пароль null/undefined (старый пользователь)
                 if (storedPassword && storedPassword !== hashedPassword) {
                     errorDiv.textContent = 'Неверный пароль';
                     errorDiv.style.display = 'block';
                     return;
                 }
                 
-                // Если пароль null, устанавливаем новый
                 if (!storedPassword) {
-                    await apiPost('/users', {
-                        username: username,
-                        password: hashedPassword,
-                        online: true
-                    });
+                    await apiPost('/users', { username, password: hashedPassword, online: true });
                 } else {
                     await apiPost(`/users/${username}/online`, { online: true });
                 }
                 
                 currentUser = username;
                 localStorage.setItem('fm_currentUser', username);
-                localStorage.setItem('fm_password', hashedPassword);
-                
-                hideAuthModal();
-                await loadUsers();
+                showChat();
                 startPolling();
             }
-            
-            updateUserUI();
         }
         
         function hashCode(str) {
@@ -1405,16 +810,9 @@
             return hash.toString();
         }
         
-        function updateUserUI() {
+        function logout() {
             if (currentUser) {
-                document.getElementById('userName').textContent = currentUser;
-                document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-            }
-        }
-        
-        async function logout() {
-            if (currentUser) {
-                await apiPost(`/users/${currentUser}/online`, { online: false });
+                apiPost(`/users/${currentUser}/online`, { online: false });
             }
             currentUser = null;
             localStorage.removeItem('fm_currentUser');
@@ -1431,12 +829,18 @@
         }
         
         function stopPolling() {
-            if (pollInterval) {
-                clearInterval(pollInterval);
-            }
+            if (pollInterval) clearInterval(pollInterval);
         }
         
-        // Init
+        // Enter to send
+        document.getElementById('messageInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Start
         init();
     </script>
 </body>
