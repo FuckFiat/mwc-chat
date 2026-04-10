@@ -405,6 +405,11 @@
             align-items: stretch;
         }
         
+        .input-container {
+            position: relative;
+            flex: 1;
+        }
+        
         .input-wrapper textarea {
             flex: 1;
             background: var(--bg);
@@ -414,6 +419,7 @@
             font-family: var(--font-mono);
             font-size: 12px;
             padding: 8px;
+            padding-right: 30px;
             resize: none;
             min-height: 36px;
             max-height: 100px;
@@ -422,36 +428,76 @@
         
         .input-wrapper textarea:focus {
             outline: none;
-            border-color: #00ff00;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), inset 0 0 8px rgba(0, 255, 0, 0.1);
-            animation: matrix-pulse 2s ease-in-out infinite;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+            animation: input-glow 2s ease-in-out infinite;
         }
         
-        @keyframes matrix-pulse {
+        @keyframes input-glow {
             0%, 100% {
-                box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), inset 0 0 8px rgba(0, 255, 0, 0.1);
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.05);
             }
             50% {
-                box-shadow: 0 0 25px rgba(0, 255, 0, 0.5), inset 0 0 12px rgba(0, 255, 0, 0.2);
+                border-color: rgba(255, 255, 255, 0.6);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.15);
             }
         }
         
-        /* Matrix typing effect */
-        .matrix-cursor {
-            color: #00ff00;
-            text-shadow: 0 0 8px #00ff00;
-            animation: blink 0.5s infinite;
+        /* Typing dots in input */
+        .input-container {
+            position: relative;
+            flex: 1;
         }
         
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+        .input-dots {
+            position: absolute;
+            right: 10px;
+            bottom: 12px;
+            display: flex;
+            gap: 3px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .input-wrapper textarea:focus ~ .input-dots {
+            opacity: 1;
+        }
+        
+        .input-dots span {
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: input-dot 1.4s ease-in-out infinite;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+        }
+        
+        .input-dots span:nth-child(1) { animation-delay: 0s; }
+        .input-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .input-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes input-dot {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
         }
         
         /* Light theme adjustment */
         [data-theme="light"] .input-wrapper textarea:focus {
-            border-color: #00aa00;
-            box-shadow: 0 0 15px rgba(0, 170, 0, 0.3), inset 0 0 8px rgba(0, 170, 0, 0.1);
+            border-color: rgba(100, 100, 100, 0.5);
+            box-shadow: 0 0 20px rgba(100, 100, 100, 0.3), inset 0 0 10px rgba(100, 100, 100, 0.1);
+        }
+        
+        [data-theme="light"] .input-dots span {
+            background: rgba(100, 100, 100, 0.8);
+            box-shadow: 0 0 6px rgba(100, 100, 100, 0.5);
         }
         
         /* ZeroCo0L special styling */
@@ -819,7 +865,14 @@
             </div>
             <div class="input-area" id="inputArea" style="display: none;">
                 <div class="input-wrapper">
-                    <textarea id="messageInput" placeholder="Сообщение..." rows="1"></textarea>
+                    <div class="input-container">
+                        <textarea id="messageInput" placeholder="Сообщение..." rows="1"></textarea>
+                        <div class="input-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
                     <button class="send-btn" onclick="sendMessage()">→</button>
                 </div>
             </div>
@@ -1302,42 +1355,16 @@
             return hash.toString();
         }
         
-        // Matrix typing effect
-        let matrixTimeout = null;
-        let lastTextLength = 0;
-        
-        function initMatrixEffect() {
-            const input = document.getElementById('messageInput');
-            if (!input) return;
-            
-            input.addEventListener('input', (e) => {
-                const currentLength = input.value.length;
-                
-                // Only trigger effect when typing (not deleting)
-                if (currentLength > lastTextLength) {
-                    // Matrix green flash effect
-                    input.style.textShadow = '0 0 8px #00ff00';
-                    input.style.color = '#00ff00';
-                    
-                    clearTimeout(matrixTimeout);
-                    matrixTimeout = setTimeout(() => {
-                        input.style.textShadow = '';
-                        input.style.color = '';
-                    }, 100);
-                }
-                
-                lastTextLength = currentLength;
-            });
-            
-            // Green cursor on focus
-            input.addEventListener('focus', () => {
-                input.style.caretColor = '#00ff00';
-            });
-        }
-        
         // Init on load
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initMatrixEffect, 500);
+            // Auto-focus on message input after auth
+            const savedUser = localStorage.getItem('fm_currentUser');
+            if (savedUser) {
+                setTimeout(() => {
+                    const input = document.getElementById('messageInput');
+                    if (input) input.focus();
+                }, 500);
+            }
         });
         
         function logout() {
