@@ -6,122 +6,350 @@
     <title>MWC Chat — Майнеры</title>
     <style>
         :root {
-            --gold: #FFD700;
-            --orange: #FFA500;
-            --dark: #0a0a0a;
-            --darker: #050505;
-            --card: #111111;
-            --border: rgba(255, 215, 0, 0.1);
+            /* Default: Dark theme */
+            --bg: #0a0a0a;
+            --bg-card: #111111;
+            --bg-input: #0a0a0a;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --accent: #FFD700;
+            --accent-alt: #FFA500;
             --online: #4caf50;
-            --offline: #666;
+            --border: rgba(255, 215, 0, 0.1);
+        }
+        
+        [data-theme="light"] {
+            --bg: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --text: #1a1a1a;
+            --text-dim: #666666;
+            --accent: #FFD700;
+            --accent-alt: #FFA500;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="gold"] {
+            --bg: #1a1500;
+            --bg-card: #2a2000;
+            --bg-input: #1a1500;
+            --text: #FFD700;
+            --text-dim: #cc9900;
+            --accent: #FFD700;
+            --accent-alt: #FFA500;
+            --border: rgba(255, 215, 0, 0.2);
+        }
+        
+        [data-theme="irc"] {
+            --bg: #000000;
+            --bg-card: #000000;
+            --bg-input: #000000;
+            --text: #00ff00;
+            --text-dim: #008800;
+            --accent: #00ff00;
+            --accent-alt: #00cc00;
+            --online: #00ff00;
+            --border: #003300;
+        }
+        
+        [data-theme="terminal"] {
+            --bg: #0c0c0c;
+            --bg-card: #1a1a1a;
+            --bg-input: #0c0c0c;
+            --text: #00ff00;
+            --text-dim: #008800;
+            --accent: #00ff00;
+            --accent-alt: #00cc00;
+            --online: #00ff00;
+            --border: #003300;
+        }
+        
+        [data-theme="termius"] {
+            --bg: #0d1117;
+            --bg-card: #161b22;
+            --bg-input: #0d1117;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent: #58a6ff;
+            --accent-alt: #1f6feb;
+            --online: #3fb950;
+            --border: #30363d;
+        }
+        
+        [data-theme="matrix"] {
+            --bg: #000000;
+            --bg-card: #001100;
+            --bg-input: #000000;
+            --text: #00ff00;
+            --text-dim: #00aa00;
+            --accent: #00ff00;
+            --accent-alt: #00ff00;
+            --online: #00ff00;
+            --border: #003300;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--darker);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Mono', 'Consolas', monospace;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
         }
         
-        .honeycomb {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(255, 165, 0, 0.03) 0%, transparent 50%);
-            background-size: 60px 60px;
-            animation: honeycombMove 20s linear infinite;
-            pointer-events: none;
-            z-index: 0;
+        /* Theme selector */
+        .theme-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        @keyframes honeycombMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 60px 60px; }
+        .theme-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+        
+        .theme-select {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .theme-select:focus {
+            outline: none;
+            border-color: var(--accent);
         }
         
         .container {
-            position: relative;
-            z-index: 1;
             display: flex;
-            height: 100vh;
+            height: calc(100vh - 50px);
         }
         
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: var(--card);
-            border-right: 1px solid var(--border);
+        /* Main chat */
+        .main {
+            flex: 1;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid var(--border);
         }
         
-        .sidebar-header {
-            padding: 20px;
+        .chat-header {
+            padding: 15px 20px;
+            background: var(--bg-card);
             border-bottom: 1px solid var(--border);
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .logo {
-            font-size: 32px;
-            margin-bottom: 5px;
+        .chat-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
         }
         
-        .sidebar-header h1 {
-            font-size: 20px;
-            background: linear-gradient(135deg, var(--gold), var(--orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .chat-topic {
+            font-size: 12px;
+            color: var(--text-dim);
         }
         
-        .channels {
+        /* Messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--bg);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 3px;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+            padding-left: 0;
+        }
+        
+        /* Terminal style */
+        [data-theme="irc"] .message,
+        [data-theme="terminal"] .message,
+        [data-theme="matrix"] .message {
+            font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
+        }
+        
+        [data-theme="irc"] .message::before {
+            content: '<';
+            color: var(--text-dim);
+        }
+        
+        [data-theme="irc"] .message-author::after {
+            content: '> ';
+            color: var(--text-dim);
+        }
+        
+        [data-theme="terminal"] .message::before {
+            content: '$ ';
+            color: var(--accent);
+        }
+        
+        [data-theme="matrix"] .message {
+            text-shadow: 0 0 5px var(--accent);
+        }
+        
+        /* Input */
+        .message-input {
+            padding: 15px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn-send {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Online users panel */
+        .online-panel {
+            width: 250px;
+            background: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border);
+        }
+        
+        .online-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+        }
+        
+        .online-count {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-left: 10px;
+        }
+        
+        .online-list {
             flex: 1;
             overflow-y: auto;
             padding: 10px;
         }
         
-        .channel-category {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        
-        .channel {
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .online-user {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .channel:hover {
+        .online-user:hover {
             background: rgba(255, 215, 0, 0.1);
         }
         
-        .channel.active {
-            background: rgba(255, 215, 0, 0.2);
-            color: var(--gold);
-        }
-        
-        .channel-icon {
-            font-size: 18px;
-        }
-        
-        .channel-name {
+        .online-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
             font-size: 14px;
         }
         
-        .channel-count {
-            font-size: 12px;
-            color: #666;
-            margin-left: auto;
+        .online-info {
+            flex: 1;
+        }
+        
+        .online-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .online-status {
+            font-size: 11px;
+            color: var(--online);
+        }
+        
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--online);
+            box-shadow: 0 0 5px var(--online);
         }
         
         /* User section */
@@ -137,17 +365,19 @@
             padding: 10px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
         }
         
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--orange));
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            color: #000;
         }
         
         .user-info {
@@ -164,198 +394,12 @@
             color: var(--online);
         }
         
-        .user-status.offline {
-            color: var(--offline);
-        }
-        
-        /* Main chat */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-header {
-            padding: 15px 20px;
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .chat-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .chat-topic {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .chat-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn-icon {
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-icon:hover {
-            background: rgba(255, 215, 0, 0.1);
-            color: var(--gold);
-        }
-        
-        /* Messages */
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .message {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        
-        .message-content {
-            flex: 1;
-        }
-        
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 5px;
-        }
-        
-        .message-author {
-            font-weight: 600;
-            color: var(--gold);
-        }
-        
-        .message-time {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .message-text {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #ddd;
-        }
-        
-        /* Input */
-        .message-input {
-            padding: 15px;
-            background: var(--card);
-            border-top: 1px solid var(--border);
-        }
-        
-        .input-wrapper {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .input-wrapper input {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--dark);
-            color: #fff;
-            font-size: 14px;
-        }
-        
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-        
-        .btn-send {
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: none;
-            background: linear-gradient(135deg, var(--gold), var(--orange));
-            color: #000;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-        }
-        
-        /* Online users */
-        .online-users {
-            padding: 15px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .online-title {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .online-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .online-user {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            font-size: 12px;
-        }
-        
-        .online-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--online);
-        }
-        
         /* Auth modal */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 100;
             align-items: center;
             justify-content: center;
@@ -366,7 +410,7 @@
         }
         
         .modal-content {
-            background: var(--card);
+            background: var(--bg-card);
             border-radius: 20px;
             padding: 30px;
             width: 400px;
@@ -378,7 +422,7 @@
             text-align: center;
             font-size: 24px;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--gold), var(--orange));
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -390,7 +434,7 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #888;
+            color: var(--text-dim);
             font-size: 12px;
             text-transform: uppercase;
         }
@@ -400,14 +444,15 @@
             padding: 12px;
             border-radius: 10px;
             border: 1px solid var(--border);
-            background: var(--dark);
-            color: #fff;
+            background: var(--bg-input);
+            color: var(--text);
             font-size: 14px;
+            font-family: inherit;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: var(--gold);
+            border-color: var(--accent);
         }
         
         .btn-submit {
@@ -415,11 +460,12 @@
             padding: 15px;
             border-radius: 10px;
             border: none;
-            background: linear-gradient(135deg, var(--gold), var(--orange));
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
             color: #000;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: inherit;
         }
         
         .btn-submit:hover {
@@ -430,94 +476,69 @@
         .modal-footer {
             text-align: center;
             margin-top: 15px;
-            color: #666;
+            color: var(--text-dim);
             font-size: 14px;
         }
         
         .modal-footer a {
-            color: var(--gold);
+            color: var(--accent);
             text-decoration: none;
         }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-            }
-            .channel-name, .channel-count, .user-name, .user-status, .online-users {
+            .online-panel {
                 display: none;
             }
-            .sidebar-header h1 {
-                font-size: 16px;
+            .theme-bar {
+                flex-wrap: wrap;
             }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
         }
     </style>
 </head>
-<body>
-    <div class="honeycomb"></div>
+<body data-theme="dark">
+    <div class="theme-bar">
+        <span class="theme-label">Тема:</span>
+        <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+            <option value="dark">🌑 Тёмная</option>
+            <option value="light">☀️ Светлая</option>
+            <option value="gold">🪙 Золотая MWC</option>
+            <option value="irc">💻 IRC</option>
+            <option value="terminal">⬛ Терминал</option>
+            <option value="termius">🔐 Termius</option>
+            <option value="matrix">🟢 Matrix</option>
+        </select>
+        <span style="color: var(--text-dim); margin-left: auto; font-size: 12px;">
+            MWC Chat v1.0
+        </span>
+    </div>
     
     <div class="container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">⛏️</div>
-                <h1>MWC Chat</h1>
-            </div>
-            
-            <div class="channels">
-                <div class="channel-category">Каналы</div>
-                <div class="channel active" data-channel="general">
-                    <span class="channel-icon">#</span>
-                    <span class="channel-name">general</span>
-                    <span class="channel-count">12</span>
-                </div>
-                <div class="channel" data-channel="mining">
-                    <span class="channel-icon">⛏️</span>
-                    <span class="channel-name">mining</span>
-                    <span class="channel-count">8</span>
-                </div>
-                <div class="channel" data-channel="trading">
-                    <span class="channel-icon">📈</span>
-                    <span class="channel-name">trading</span>
-                    <span class="channel-count">15</span>
-                </div>
-                <div class="channel" data-channel="hardware">
-                    <span class="channel-icon">🔧</span>
-                    <span class="channel-name">hardware</span>
-                    <span class="channel-count">6</span>
-                </div>
-                <div class="channel" data-channel="offtopic">
-                    <span class="channel-icon">💬</span>
-                    <span class="channel-name">offtopic</span>
-                    <span class="channel-count">23</span>
-                </div>
-            </div>
-            
-            <div class="online-users">
-                <div class="online-title">Онлайн — <span id="onlineCount">0</span></div>
-                <div class="online-list" id="onlineList"></div>
-            </div>
-            
-            <div class="user-section">
-                <div class="user-card" id="userCard">
-                    <div class="user-avatar" id="userAvatar">?</div>
-                    <div class="user-info">
-                        <div class="user-name" id="userName">Гость</div>
-                        <div class="user-status" id="userStatus">Не авторизован</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <div class="main">
             <div class="chat-header">
                 <div>
-                    <div class="chat-title" id="chatTitle">#general</div>
-                    <div class="chat-topic" id="chatTopic">Общий чат майнеров</div>
+                    <div class="chat-title">#general</div>
+                    <div class="chat-topic">Чат майнеров MWC</div>
                 </div>
-                <div class="chat-actions">
-                    <button class="btn-icon" onclick="showOnline()">👥</button>
-                    <button class="btn-icon" onclick="logout()">🚪</button>
-                </div>
+                <button class="btn-send" onclick="logout()" style="padding: 8px 15px; font-size: 12px;">Выход</button>
             </div>
             
             <div class="messages" id="messages"></div>
@@ -525,7 +546,23 @@
             <div class="message-input">
                 <div class="input-wrapper">
                     <input type="text" id="messageInput" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
-                    <button class="btn-send" onclick="sendMessage()">Отправить</button>
+                    <button class="btn-send" onclick="sendMessage()">→</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="online-panel">
+            <div class="online-header">
+                Онлайн<span class="online-count" id="onlineCount">(0)</span>
+            </div>
+            <div class="online-list" id="onlineList"></div>
+            <div class="user-section">
+                <div class="user-card" onclick="logout()">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Гость</div>
+                        <div class="user-status" id="userStatus">В сети</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -555,12 +592,13 @@
     <script>
         // State
         let currentUser = null;
-        let currentChannel = 'general';
-        let messages = {};
+        let messages = [];
         let users = {};
+        let currentTheme = 'dark';
         
         // Initialize
         function init() {
+            loadTheme();
             loadUsers();
             loadMessages();
             checkAuth();
@@ -569,23 +607,33 @@
             startPolling();
         }
         
-        // Load users from localStorage
+        // Theme
+        function loadTheme() {
+            const saved = localStorage.getItem('mwc_theme');
+            if (saved) {
+                currentTheme = saved;
+                document.body.dataset.theme = saved;
+                document.getElementById('themeSelect').value = saved;
+            }
+        }
+        
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.dataset.theme = theme;
+            localStorage.setItem('mwc_theme', theme);
+        }
+        
+        // Load users
         function loadUsers() {
             const saved = localStorage.getItem('mwc_users');
             if (saved) {
                 users = JSON.parse(saved);
             } else {
-                // Demo users
-                users = {
-                    'miner1': { password: 'hash1', online: false, avatar: 'M' },
-                    'miner2': { password: 'hash2', online: false, avatar: 'N' },
-                    'zero': { password: 'zero123', online: false, avatar: 'Z' }
-                };
+                users = {};
                 saveUsers();
             }
         }
         
-        // Save users
         function saveUsers() {
             localStorage.setItem('mwc_users', JSON.stringify(users));
         }
@@ -596,44 +644,38 @@
             if (saved) {
                 messages = JSON.parse(saved);
             } else {
-                messages = {
-                    'general': [
-                        { user: 'miner1', text: 'Всем привет! Кто майнит на 2Miners?', time: Date.now() - 3600000 },
-                        { user: 'miner2', text: 'Я на 2Miners. Хешрейт норм?', time: Date.now() - 3500000 },
-                        { user: 'zero', text: '47 GH/s на G1 Mini', time: Date.now() - 3400000 }
-                    ]
-                };
+                messages = [];
                 saveMessages();
             }
         }
         
-        // Save messages
         function saveMessages() {
             localStorage.setItem('mwc_messages', JSON.stringify(messages));
         }
         
-        // Check auth
+        // Auth
         function checkAuth() {
             const saved = localStorage.getItem('mwc_currentUser');
             if (saved) {
                 currentUser = saved;
+                if (users[currentUser]) {
+                    users[currentUser].online = true;
+                    saveUsers();
+                }
                 updateUserUI();
             } else {
                 showAuthModal();
             }
         }
         
-        // Show auth modal
         function showAuthModal() {
             document.getElementById('authModal').classList.add('active');
         }
         
-        // Hide auth modal
         function hideAuthModal() {
             document.getElementById('authModal').classList.remove('active');
         }
         
-        // Switch auth mode
         function switchAuth() {
             const title = document.getElementById('modalTitle');
             const button = document.getElementById('authButton');
@@ -650,7 +692,6 @@
             }
         }
         
-        // Handle auth
         function handleAuth(e) {
             e.preventDefault();
             
@@ -664,14 +705,13 @@
             }
             
             if (isRegister) {
-                // Register
                 if (users[username]) {
                     alert('Пользователь уже существует');
                     return;
                 }
                 
                 users[username] = {
-                    password: hashCode(password),
+                    password: hashCode(password || '123'),
                     online: true,
                     avatar: username[0].toUpperCase()
                 };
@@ -684,16 +724,14 @@
                 updateUserUI();
                 renderOnlineUsers();
                 
-                // Welcome message
-                addMessage('general', 'system', `${username} присоединился к чату!`);
+                addSystemMessage(`${username} присоединился к чату`);
             } else {
-                // Login
                 if (!users[username]) {
                     alert('Пользователь не найден');
                     return;
                 }
                 
-                if (users[username].password !== hashCode(password)) {
+                if (users[username].password !== hashCode(password || '123')) {
                     alert('Неверный пароль');
                     return;
                 }
@@ -710,7 +748,6 @@
             }
         }
         
-        // Hash password (simple)
         function hashCode(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -719,22 +756,18 @@
             return hash.toString();
         }
         
-        // Update user UI
         function updateUserUI() {
             if (currentUser) {
                 document.getElementById('userName').textContent = currentUser;
                 document.getElementById('userStatus').textContent = 'В сети';
-                document.getElementById('userStatus').className = 'user-status';
                 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
             } else {
                 document.getElementById('userName').textContent = 'Гость';
                 document.getElementById('userStatus').textContent = 'Не авторизован';
-                document.getElementById('userStatus').className = 'user-status offline';
                 document.getElementById('userAvatar').textContent = '?';
             }
         }
         
-        // Logout
         function logout() {
             if (currentUser && users[currentUser]) {
                 users[currentUser].online = false;
@@ -746,41 +779,47 @@
             showAuthModal();
         }
         
-        // Add message
-        function addMessage(channel, user, text) {
-            if (!messages[channel]) {
-                messages[channel] = [];
-            }
-            
-            messages[channel].push({
+        // Messages
+        function addMessage(user, text) {
+            messages.push({
                 user: user,
                 text: text,
                 time: Date.now()
             });
             
+            // Keep only last 100 messages
+            if (messages.length > 100) {
+                messages = messages.slice(-100);
+            }
+            
             saveMessages();
             renderMessages();
         }
         
-        // Render messages
+        function addSystemMessage(text) {
+            messages.push({
+                user: '⚠️ Система',
+                text: text,
+                time: Date.now()
+            });
+            saveMessages();
+            renderMessages();
+        }
+        
         function renderMessages() {
             const container = document.getElementById('messages');
-            const channelMessages = messages[currentChannel] || [];
             
-            container.innerHTML = channelMessages.map(msg => {
-                const avatar = users[msg.user]?.avatar || msg.user[0];
+            container.innerHTML = messages.map(msg => {
+                const avatar = users[msg.user]?.avatar || msg.user[0] || '?';
                 const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 
                 return `
                     <div class="message">
-                        <div class="message-avatar">${avatar}</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">${msg.user}</span>
-                                <span class="message-time">${time}</span>
-                            </div>
-                            <div class="message-text">${msg.text}</div>
+                        <div class="message-header">
+                            <span class="message-author">${avatar} ${msg.user}</span>
+                            <span class="message-time">${time}</span>
                         </div>
+                        <div class="message-text">${escapeHtml(msg.text)}</div>
                     </div>
                 `;
             }).join('');
@@ -788,7 +827,12 @@
             container.scrollTop = container.scrollHeight;
         }
         
-        // Send message
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         function sendMessage() {
             if (!currentUser) {
                 showAuthModal();
@@ -800,57 +844,46 @@
             
             if (!text) return;
             
-            addMessage(currentChannel, currentUser, text);
+            addMessage(currentUser, text);
             input.value = '';
         }
         
-        // Handle key press
         function handleKeyPress(e) {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         }
         
-        // Switch channel
-        document.querySelectorAll('.channel').forEach(ch => {
-            ch.addEventListener('click', () => {
-                document.querySelectorAll('.channel').forEach(c => c.classList.remove('active'));
-                ch.classList.add('active');
-                currentChannel = ch.dataset.channel;
-                document.getElementById('chatTitle').textContent = '#' + currentChannel;
-                renderMessages();
-            });
-        });
-        
-        // Render online users
+        // Online users
         function renderOnlineUsers() {
             const list = document.getElementById('onlineList');
             const onlineUsers = Object.keys(users).filter(u => users[u].online);
             
-            document.getElementById('onlineCount').textContent = onlineUsers.length;
+            document.getElementById('onlineCount').textContent = `(${onlineUsers.length})`;
             
             list.innerHTML = onlineUsers.map(user => {
                 const avatar = users[user].avatar || user[0];
                 return `
                     <div class="online-user">
-                        <span class="online-dot"></span>
-                        ${user}
+                        <div class="online-avatar">${avatar}</div>
+                        <div class="online-info">
+                            <div class="online-name">${user}</div>
+                            <div class="online-status">В сети</div>
+                        </div>
+                        <div class="online-dot"></div>
                     </div>
                 `;
             }).join('');
         }
         
-        // Polling (simulate real-time)
+        // Polling
         function startPolling() {
             setInterval(() => {
+                loadMessages();
+                loadUsers();
                 renderMessages();
                 renderOnlineUsers();
             }, 2000);
-        }
-        
-        // Show online
-        function showOnline() {
-            alert('Онлайн: ' + Object.keys(users).filter(u => users[u].online).join(', '));
         }
         
         // Init
