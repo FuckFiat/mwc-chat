@@ -781,11 +781,15 @@
         
         // Messages
         function addMessage(user, text) {
+            console.log('addMessage called:', user, text);
+            
             messages.push({
                 user: user,
                 text: text,
                 time: Date.now()
             });
+            
+            console.log('Messages array:', messages);
             
             // Keep only last 100 messages
             if (messages.length > 100) {
@@ -794,6 +798,7 @@
             
             saveMessages();
             renderMessages();
+            console.log('Message added successfully');
         }
         
         function addSystemMessage(text) {
@@ -834,7 +839,10 @@
         }
         
         function sendMessage() {
+            console.log('sendMessage called, currentUser:', currentUser);
+            
             if (!currentUser) {
+                console.log('No currentUser, showing auth modal');
                 showAuthModal();
                 return;
             }
@@ -842,14 +850,24 @@
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             
-            if (!text) return;
+            console.log('Message text:', text);
             
+            if (!text) {
+                console.log('Empty message, skipping');
+                return;
+            }
+            
+            console.log('Adding message from', currentUser, ':', text);
             addMessage(currentUser, text);
             input.value = '';
+            console.log('Message sent successfully');
         }
         
         function handleKeyPress(e) {
+            console.log('Key pressed:', e.key, 'currentUser:', currentUser);
             if (e.key === 'Enter') {
+                console.log('Enter pressed, sending message');
+                e.preventDefault();
                 sendMessage();
             }
         }
