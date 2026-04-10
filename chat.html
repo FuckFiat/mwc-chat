@@ -12,19 +12,19 @@
         }
         
         :root {
-            --bg: #1a1b26;
-            --bg-dark: #16161e;
-            --bg-light: #24283b;
-            --bg-highlight: #292e42;
+            --bg: #0f0f14;
+            --bg-dark: #0a0a0e;
+            --bg-light: #16161e;
+            --bg-highlight: #1a1b26;
             --text: #c0caf5;
-            --text-dim: #565f89;
+            --text-dim: #414868;
             --text-bright: #a9b1d6;
             --accent: #7aa2f7;
             --accent-hover: #7dcfff;
             --online: #9ece6a;
             --offline: #565f89;
             --mention: #ff9e64;
-            --border: #292e42;
+            --border: #1a1b26;
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
         }
         
@@ -655,17 +655,17 @@
         <div class="sidebar-left">
             <div class="nav-section">
                 <div class="nav-title">Навигация</div>
-                <div class="nav-item active">
+                <div class="nav-item active" onclick="setChannel('all')" id="nav-all">
                     <span>📋</span>
                     <span>Все сообщения</span>
                     <span class="nav-hotkey">[a]</span>
                 </div>
-                <div class="nav-item">
+                <div class="nav-item" onclick="setChannel('private')" id="nav-private">
                     <span>🔒</span>
                     <span>Личные</span>
                     <span class="nav-hotkey">[p]</span>
                 </div>
-                <div class="nav-item">
+                <div class="nav-item" onclick="setChannel('mentions')" id="nav-mentions">
                     <span>🔔</span>
                     <span>Упоминания</span>
                     <span class="nav-hotkey">[@]</span>
@@ -674,20 +674,20 @@
             
             <div class="streams">
                 <div class="nav-title">Каналы</div>
-                <div class="stream-item active">
+                <div class="stream-item active" onclick="setChannel('fucking-miners')" id="stream-fucking-miners">
                     <div class="stream-dot"></div>
                     <div class="stream-name">fucking-miners</div>
                     <div class="stream-count" id="unreadCount">0</div>
                 </div>
-                <div class="stream-item">
+                <div class="stream-item" onclick="setChannel('general')" id="stream-general">
                     <div class="stream-dot"></div>
                     <div class="stream-name">general</div>
                 </div>
-                <div class="stream-item">
+                <div class="stream-item" onclick="setChannel('mining')" id="stream-mining">
                     <div class="stream-dot"></div>
                     <div class="stream-name">mining</div>
                 </div>
-                <div class="stream-item">
+                <div class="stream-item" onclick="setChannel('trading')" id="stream-trading">
                     <div class="stream-dot"></div>
                     <div class="stream-name">trading</div>
                 </div>
@@ -949,7 +949,7 @@
                 const u = users[user];
                 const avatar = u.avatar || user[0];
                 return `
-                    <div class="user-item">
+                    <div class="user-item" onclick="startPrivate('${user}')">
                         <div class="user-avatar-small">${avatar}</div>
                         <div class="user-info-small">
                             <div class="user-name-small">${user}</div>
@@ -959,6 +959,49 @@
                     </div>
                 `;
             }).join('');
+        }
+        
+        // Channel navigation
+        let currentChannel = 'fucking-miners';
+        
+        function setChannel(channel) {
+            currentChannel = channel;
+            
+            // Update active states
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.stream-item').forEach(el => el.classList.remove('active'));
+            
+            const navItem = document.getElementById('nav-' + channel.replace(/-/g, ''));
+            const streamItem = document.getElementById('stream-' + channel.replace(/-/g, ''));
+            
+            if (navItem) navItem.classList.add('active');
+            if (streamItem) streamItem.classList.add('active');
+            
+            // Update header
+            const headerNames = {
+                'fucking-miners': '#fucking-miners',
+                'general': '#general',
+                'mining': '#mining',
+                'trading': '#trading',
+                'private': '🔒 Личные',
+                'all': '📋 Все сообщения',
+                'mentions': '🔔 Упоминания'
+            };
+            
+            document.querySelector('.chat-stream-name').textContent = headerNames[channel] || channel;
+            
+            // Load messages for channel
+            loadMessages();
+        }
+        
+        // Private messages
+        function startPrivate(username) {
+            setChannel('private');
+            document.querySelector('.chat-topic').textContent = `Личные с ${username}`;
+            document.getElementById('messageInput').placeholder = `Сообщение для ${username}...`;
+            
+            // Store recipient
+            window.privateRecipient = username;
         }
         
         // Auth
