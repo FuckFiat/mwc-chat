@@ -5,319 +5,469 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fucking Miners — Admin Panel</title>
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --bg-card: #111111;
-            --text: #ffffff;
-            --text-dim: #888888;
-            --accent: #FFD700;
-            --border: rgba(255, 215, 0, 0.1);
-            --online: #4caf50;
-            --offline: #666;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0d0d0d;
+            --bg-dark: #080808;
+            --bg-light: #151515;
+            --bg-highlight: #1a1a1a;
+            --text: #e0e0e0;
+            --text-dim: #555555;
+            --accent: #00ff00;
+            --accent-hover: #00ff88;
+            --border: #222222;
+            --error: #ff4444;
+            --success: #00ff00;
+        }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            margin-top: 100px;
+        }
+        
+        .admin-container {
+            max-width: 900px;
+            width: 100%;
+            display: none;
         }
         
         h1 {
-            color: var(--accent);
+            font-size: 24px;
             margin-bottom: 20px;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
+            color: var(--accent);
             text-align: center;
         }
         
-        .stat-value {
-            font-size: 36px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-top: 5px;
-        }
-        
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .section-title {
+        h2 {
             font-size: 18px;
-            font-weight: 600;
-            color: var(--accent);
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+        
+        .form-group {
             margin-bottom: 15px;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        th {
-            color: var(--text-dim);
+        label {
+            display: block;
+            margin-bottom: 5px;
             font-size: 12px;
+            color: var(--text-dim);
             text-transform: uppercase;
         }
         
-        .online {
-            color: var(--online);
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
         }
         
-        .offline {
-            color: var(--offline);
-        }
-        
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
         }
         
         button {
+            background: var(--accent);
+            color: #000;
+            border: none;
             padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
         
         button:hover {
-            background: var(--accent);
-            color: #000;
+            background: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
         }
         
-        button.danger {
-            border-color: #ff4444;
+        button.secondary {
+            background: var(--bg-light);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
         
-        button.danger:hover {
-            background: #ff4444;
+        button.secondary:hover {
+            background: var(--bg-highlight);
         }
         
-        .back-link {
+        .error {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .success {
+            color: var(--success);
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .user-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        
+        .user-card input, .user-card select {
+            font-size: 12px;
+            padding: 8px;
+        }
+        
+        .user-preview {
+            padding: 10px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .user-preview .nick {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .user-preview .tag {
             display: inline-block;
-            margin-bottom: 20px;
-            color: var(--accent);
-            text-decoration: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 5px;
+            text-transform: uppercase;
         }
         
-        .back-link:hover {
-            text-decoration: underline;
+        .tag-admin { background: #ff4444; color: #fff; }
+        .tag-owner { background: #ffcc00; color: #000; }
+        .tag-mod { background: #4488ff; color: #fff; }
+        .tag-vip { background: #aa44ff; color: #fff; }
+        .tag-verified { background: #00aa00; color: #fff; }
+        
+        .glow-effect {
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .gradient-effect {
+            background: linear-gradient(90deg, #00ff00, #00ff88, #00ff00);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 2s linear infinite;
+        }
+        
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        .pulse-effect {
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .header button {
+            padding: 8px 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .user-card {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-link">← Назад в чат</a>
+    <div class="login-container" id="loginContainer">
+        <h1>⚡ Admin Panel</h1>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password" required autofocus>
+            </div>
+            <button type="submit">Login</button>
+            <div class="error" id="loginError" style="display: none;">Invalid password</div>
+        </form>
+    </div>
     
-    <h1>⚡ Fucking Miners — Admin Panel</h1>
-    
-    <div class="stats">
-        <div class="stat-card">
-            <div class="stat-value" id="totalUsers">0</div>
-            <div class="stat-label">Пользователей</div>
+    <div class="admin-container" id="adminContainer">
+        <div class="header">
+            <h1>⚡ Fucking Miners — Admin</h1>
+            <button class="secondary" onclick="logout()">Logout</button>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="onlineUsers">0</div>
-            <div class="stat-label">Онлайн</div>
+        
+        <div class="section">
+            <h2>Add New User Style</h2>
+            <form id="addUserForm" onsubmit="addUserStyle(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="newUsername" placeholder="e.g. ZeroCo0L" required>
+                </div>
+                <div class="form-group">
+                    <label>Nick Color</label>
+                    <input type="color" id="newColor" value="#00ff00">
+                </div>
+                <div class="form-group">
+                    <label>Tag</label>
+                    <select id="newTag">
+                        <option value="">No tag</option>
+                        <option value="admin">Admin</option>
+                        <option value="owner">Owner</option>
+                        <option value="mod">Moderator</option>
+                        <option value="vip">VIP</option>
+                        <option value="verified">Verified</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Effect</label>
+                    <select id="newEffect">
+                        <option value="">None</option>
+                        <option value="glow">Glow</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="pulse">Pulse</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Custom CSS (optional)</label>
+                    <textarea id="newCSS" rows="3" placeholder="e.g. text-shadow: 0 0 20px #00ff00;"></textarea>
+                </div>
+                <div class="btn-row">
+                    <button type="submit">Add Style</button>
+                    <button type="button" class="secondary" onclick="previewStyle()">Preview</button>
+                </div>
+                <div class="user-preview" id="preview" style="display: none;">
+                    <span class="nick" id="previewNick">Username</span>
+                    <span class="tag" id="previewTag"></span>
+                </div>
+            </form>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="totalMessages">0</div>
-            <div class="stat-label">Сообщений</div>
+        
+        <div class="section">
+            <h2>User Styles</h2>
+            <div class="user-list" id="userList"></div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="avgMessages">0</div>
-            <div class="stat-label">Среднее сообщений</div>
+        
+        <div class="section">
+            <h2>Save Changes</h2>
+            <button onclick="saveStyles()">Save All Styles</button>
+            <div class="success" id="saveSuccess" style="display: none;">Styles saved successfully!</div>
         </div>
     </div>
     
-    <div class="section">
-        <div class="section-title">Пользователи</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ник</th>
-                    <th>Статус</th>
-                    <th>Сообщений</th>
-                    <th>Последний визит</th>
-                    <th>Регистрация</th>
-                </tr>
-            </thead>
-            <tbody id="usersTable"></tbody>
-        </table>
-    </div>
-    
-    <div class="section">
-        <div class="section-title">Последние сообщения</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Время</th>
-                    <th>Пользователь</th>
-                    <th>Сообщение</th>
-                </tr>
-            </thead>
-            <tbody id="messagesTable"></tbody>
-        </table>
-    </div>
-    
-    <div class="actions">
-        <button onclick="exportData()">📥 Экспорт данных</button>
-        <button onclick="clearMessages()" class="danger">🗑 Очистить сообщения</button>
-        <button onclick="clearAll()" class="danger">⚠️ Очистить всё</button>
-    </div>
-
     <script>
-        // Load data
-        function loadData() {
-            const users = JSON.parse(localStorage.getItem('fm_users') || '{}');
-            const messages = JSON.parse(localStorage.getItem('fm_messages') || '[]');
-            return { users, messages };
-        }
+        const ADMIN_PASSWORD = 'fuckfiat2026';
+        let userStyles = {};
         
-        // Render stats
-        function renderStats() {
-            const { users, messages } = loadData();
+        function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
             
-            const totalUsers = Object.keys(users).length;
-            const onlineUsers = Object.keys(users).filter(u => users[u].online).length;
-            const totalMessages = messages.length;
-            const avgMessages = totalUsers > 0 ? Math.round(totalMessages / totalUsers) : 0;
-            
-            document.getElementById('totalUsers').textContent = totalUsers;
-            document.getElementById('onlineUsers').textContent = onlineUsers;
-            document.getElementById('totalMessages').textContent = totalMessages;
-            document.getElementById('avgMessages').textContent = avgMessages;
-        }
-        
-        // Render users table
-        function renderUsers() {
-            const { users } = loadData();
-            const table = document.getElementById('usersTable');
-            
-            const rows = Object.keys(users).map(username => {
-                const user = users[username];
-                const status = user.online ? 'Онлайн' : 'Офлайн';
-                const statusClass = user.online ? 'online' : 'offline';
-                const lastSeen = user.lastSeen ? new Date(user.lastSeen).toLocaleString('ru-RU') : '-';
-                const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleString('ru-RU') : '-';
-                const messageCount = user.messageCount || 0;
-                
-                return `
-                    <tr>
-                        <td><strong>${username}</strong></td>
-                        <td class="${statusClass}">${status}</td>
-                        <td>${messageCount}</td>
-                        <td>${lastSeen}</td>
-                        <td>${createdAt}</td>
-                    </tr>
-                `;
-            }).join('');
-            
-            table.innerHTML = rows;
-        }
-        
-        // Render messages table
-        function renderMessages() {
-            const { messages } = loadData();
-            const table = document.getElementById('messagesTable');
-            
-            const last20 = messages.slice(-20).reverse();
-            
-            const rows = last20.map(msg => {
-                const time = new Date(msg.time).toLocaleString('ru-RU');
-                const text = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
-                
-                return `
-                    <tr>
-                        <td>${time}</td>
-                        <td><strong>${msg.user}</strong></td>
-                        <td>${text}</td>
-                    </tr>
-                `;
-            }).join('');
-            
-            table.innerHTML = rows;
-        }
-        
-        // Export data
-        function exportData() {
-            const { users, messages } = loadData();
-            const data = { users, messages, exportedAt: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fucking-miners-backup-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-        
-        // Clear messages
-        function clearMessages() {
-            if (confirm('Удалить все сообщения?')) {
-                localStorage.setItem('fm_messages', '[]');
-                renderStats();
-                renderUsers();
-                renderMessages();
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'block';
+                loadStyles();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
             }
         }
         
-        // Clear all
-        function clearAll() {
-            if (confirm('Удалить всех пользователей и сообщения?')) {
-                localStorage.removeItem('fm_users');
-                localStorage.removeItem('fm_messages');
-                localStorage.removeItem('fm_currentUser');
-                renderStats();
-                renderUsers();
-                renderMessages();
+        function logout() {
+            document.getElementById('adminContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        function loadStyles() {
+            const saved = localStorage.getItem('fm_admin_styles');
+            if (saved) {
+                userStyles = JSON.parse(saved);
+            }
+            renderUserList();
+        }
+        
+        function saveStyles() {
+            localStorage.setItem('fm_admin_styles', JSON.stringify(userStyles));
+            document.getElementById('saveSuccess').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('saveSuccess').style.display = 'none';
+            }, 3000);
+        }
+        
+        function addUserStyle(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('newUsername').value.trim();
+            const color = document.getElementById('newColor').value;
+            const tag = document.getElementById('newTag').value;
+            const effect = document.getElementById('newEffect').value;
+            const css = document.getElementById('newCSS').value.trim();
+            
+            if (!username) return;
+            
+            userStyles[username.toLowerCase()] = {
+                color: color,
+                tag: tag,
+                effect: effect,
+                css: css
+            };
+            
+            renderUserList();
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newCSS').value = '';
+        }
+        
+        function deleteUserStyle(username) {
+            delete userStyles[username];
+            renderUserList();
+        }
+        
+        function previewStyle() {
+            const username = document.getElementById('newUsername').value || 'Username';
+            const color = document.getElementById('newColor').value;
+            const tag = document.getElementById('newTag').value;
+            const effect = document.getElementById('newEffect').value;
+            
+            const preview = document.getElementById('preview');
+            const previewNick = document.getElementById('previewNick');
+            const previewTag = document.getElementById('previewTag');
+            
+            preview.style.display = 'block';
+            previewNick.textContent = username;
+            previewNick.style.color = color;
+            previewNick.className = 'nick';
+            
+            if (effect === 'glow') {
+                previewNick.classList.add('glow-effect');
+            } else if (effect === 'gradient') {
+                previewNick.classList.add('gradient-effect');
+            } else if (effect === 'pulse') {
+                previewNick.classList.add('pulse-effect');
+            }
+            
+            if (tag) {
+                previewTag.textContent = tag;
+                previewTag.className = 'tag tag-' + tag;
+                previewTag.style.display = 'inline-block';
+            } else {
+                previewTag.style.display = 'none';
             }
         }
         
-        // Init
-        renderStats();
-        renderUsers();
-        renderMessages();
+        function renderUserList() {
+            const list = document.getElementById('userList');
+            const users = Object.entries(userStyles);
+            
+            if (users.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 20px;">No custom styles yet</div>';
+                return;
+            }
+            
+            list.innerHTML = users.map(([username, style]) => `
+                <div class="user-card">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" value="${username}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="color" value="${style.color}" onchange="updateStyle('${username}', 'color', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Tag</label>
+                        <select onchange="updateStyle('${username}', 'tag', this.value)">
+                            <option value="" ${!style.tag ? 'selected' : ''}>No tag</option>
+                            <option value="admin" ${style.tag === 'admin' ? 'selected' : ''}>Admin</option>
+                            <option value="owner" ${style.tag === 'owner' ? 'selected' : ''}>Owner</option>
+                            <option value="mod" ${style.tag === 'mod' ? 'selected' : ''}>Moderator</option>
+                            <option value="vip" ${style.tag === 'vip' ? 'selected' : ''}>VIP</option>
+                            <option value="verified" ${style.tag === 'verified' ? 'selected' : ''}>Verified</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Effect</label>
+                        <select onchange="updateStyle('${username}', 'effect', this.value)">
+                            <option value="" ${!style.effect ? 'selected' : ''}>None</option>
+                            <option value="glow" ${style.effect === 'glow' ? 'selected' : ''}>Glow</option>
+                            <option value="gradient" ${style.effect === 'gradient' ? 'selected' : ''}>Gradient</option>
+                            <option value="pulse" ${style.effect === 'pulse' ? 'selected' : ''}>Pulse</option>
+                        </select>
+                    </div>
+                    <button class="secondary" onclick="deleteUserStyle('${username}')" style="background: var(--error); color: #fff;">Delete</button>
+                </div>
+            `).join('');
+        }
         
-        // Auto-refresh
-        setInterval(() => {
-            renderStats();
-            renderUsers();
-            renderMessages();
-        }, 2000);
+        function updateStyle(username, field, value) {
+            if (userStyles[username]) {
+                userStyles[username][field] = value;
+            }
+        }
+        
+        // Check if already logged in
+        if (localStorage.getItem('fm_admin_logged')) {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+            loadStyles();
+        }
     </script>
 </body>
 </html>

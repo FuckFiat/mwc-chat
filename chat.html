@@ -406,6 +406,48 @@
             font-size: 14px;
             line-height: 1.6;
             color: var(--text);
+        }
+        
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        
+        .tag-admin { background: #ff4444; color: #fff; }
+        .tag-owner { background: #ffcc00; color: #000; }
+        .tag-mod { background: #4488ff; color: #fff; }
+        .tag-vip { background: #aa44ff; color: #fff; }
+        .tag-verified { background: #00aa00; color: #fff; }
+        
+        /* Effects */
+        .glow-effect {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+        }
+        
+        .gradient-effect {
+            background: linear-gradient(90deg, #00ff00, #00ff88, #00ff00);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-flow 2s linear infinite;
+        }
+        
+        .pulse-effect {
+            animation: nick-pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes nick-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
             word-wrap: break-word;
         }
         
@@ -964,6 +1006,9 @@
                 return;
             }
             
+            // Load admin styles
+            const adminStyles = JSON.parse(localStorage.getItem('fm_admin_styles') || '{}');
+            
             // Build user color map
             const userColors = {};
             let colorIndex = 0;
@@ -981,9 +1026,29 @@
                 const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 const colorClass = userColors[msg.user];
                 const msgId = msg.id || msg.time;
-                const isZeroUser = msg.user.toLowerCase() === 'zeroco0l';
+                const usernameLower = msg.user.toLowerCase();
+                
+                // Check for admin styles
+                const adminStyle = adminStyles[usernameLower];
+                const isZeroUser = usernameLower === 'zeroco0l';
                 const zeroClass = isZeroUser ? 'zero-user' : '';
                 const zeroAdminClass = isZeroUser ? 'zero-admin' : '';
+                
+                // Build style string
+                let nickStyle = '';
+                let nickClass = `user-color-${colorClass}`;
+                let tagHTML = '';
+                
+                if (adminStyle) {
+                    if (adminStyle.color) nickStyle = `color: ${adminStyle.color};`;
+                    if (adminStyle.effect === 'glow') nickClass += ' glow-effect';
+                    if (adminStyle.effect === 'gradient') nickClass += ' gradient-effect';
+                    if (adminStyle.effect === 'pulse') nickClass += ' pulse-effect';
+                    if (adminStyle.css) nickStyle += adminStyle.css;
+                    if (adminStyle.tag) {
+                        tagHTML = `<span class="tag tag-${adminStyle.tag}">${adminStyle.tag}</span>`;
+                    }
+                }
                 
                 if (msg.user !== lastUser) {
                     if (i > 0) html += '</div>';
@@ -999,7 +1064,8 @@
                                 </svg>
                             </div>
                             <div class="message-header">
-                                <span class="message-author user-color-${colorClass} ${zeroAdminClass}">${msg.user}</span>
+                                <span class="message-author ${nickClass} ${zeroAdminClass}" style="${nickStyle}">${msg.user}</span>
+                                ${tagHTML}
                                 <span class="message-time">${time}</span>
                             </div>
                             <div class="message-text">${escapeHtml(msg.text)}</div>
@@ -1007,7 +1073,7 @@
                 } else {
                     html += `
                         <div class="message msg-color-${colorClass} ${zeroClass}" 
-                             style="margin-top:4px;padding:6px 10px;background:var(--bg-light);"
+                             style="margin-top:4px;padding:6px 14px;background:var(--bg-light);"
                              data-msg-id="${msgId}" 
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
