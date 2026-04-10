@@ -1033,12 +1033,21 @@
             e.preventDefault();
             
             const username = document.getElementById('authUsername').value.trim();
-            const password = document.getElementById('authPassword').value || '123';
+            let password = document.getElementById('authPassword').value || '';
             const isRegister = document.getElementById('modalTitle').textContent === 'Регистрация';
             const errorDiv = document.getElementById('authError');
             
+            // Хешируем пароль (даже пустой)
+            const hashedPassword = hashCode(password || 'default');
+            
             if (!username) {
                 errorDiv.textContent = 'Введите имя пользователя';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (username.length < 2) {
+                errorDiv.textContent = 'Имя должно быть минимум 2 символа';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -1052,35 +1061,54 @@
                     return;
                 }
                 
+                // Регистрация с хешированным паролем
                 await apiPost('/users', {
                     username: username,
-                    password: hashCode(password),
+                    password: hashedPassword,
                     online: true
                 });
                 
                 currentUser = username;
                 localStorage.setItem('fm_currentUser', username);
+                localStorage.setItem('fm_password', hashedPassword); // Сохраняем хеш
                 
                 hideAuthModal();
                 await loadUsers();
                 startPolling();
+                
+                console.log('Registered:', username, 'Hash:', hashedPassword);
             } else {
+                // Вход
                 if (!users || !users[username]) {
                     errorDiv.textContent = 'Пользователь не найден';
                     errorDiv.style.display = 'block';
                     return;
                 }
                 
-                if (users[username].password !== hashCode(password)) {
+                const storedPassword = users[username].password;
+                console.log('Login attempt:', username, 'Input hash:', hashedPassword, 'Stored:', storedPassword);
+                
+                // Проверяем пароль: либо совпадает хеш, либо пароль null/undefined (старый пользователь)
+                if (storedPassword && storedPassword !== hashedPassword) {
                     errorDiv.textContent = 'Неверный пароль';
                     errorDiv.style.display = 'block';
                     return;
                 }
                 
-                await apiPost(`/users/${username}/online`, { online: true });
+                // Если пароль null, устанавливаем новый
+                if (!storedPassword) {
+                    await apiPost('/users', {
+                        username: username,
+                        password: hashedPassword,
+                        online: true
+                    });
+                } else {
+                    await apiPost(`/users/${username}/online`, { online: true });
+                }
                 
                 currentUser = username;
                 localStorage.setItem('fm_currentUser', username);
+                localStorage.setItem('fm_password', hashedPassword);
                 
                 hideAuthModal();
                 await loadUsers();
