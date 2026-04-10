@@ -629,6 +629,139 @@
             padding: 50px;
             font-size: 13px;
         }
+        
+        /* Reply styles */
+        .message {
+            position: relative;
+        }
+        
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+        
+        .message-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .message-action-btn {
+            background: var(--bg-highlight);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-family: var(--font-mono);
+        }
+        
+        .message-action-btn:hover {
+            background: var(--accent);
+            color: #000;
+        }
+        
+        .reply-container {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .reply-container.active {
+            display: block;
+        }
+        
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .reply-to {
+            font-size: 11px;
+            color: var(--accent);
+        }
+        
+        .reply-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .reply-preview {
+            font-size: 12px;
+            color: var(--text-dim);
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .reply-quote {
+            border-left: 2px solid var(--accent);
+            padding-left: 8px;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+        
+        .reply-quote-author {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .private-badge {
+            background: var(--mention);
+            color: #000;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        
+        /* Context menu */
+        .context-menu {
+            position: fixed;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px;
+            z-index: 1000;
+            display: none;
+            min-width: 150px;
+        }
+        
+        .context-menu.active {
+            display: block;
+        }
+        
+        .context-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .context-menu-item:hover {
+            background: var(--bg-highlight);
+        }
+        
+        .context-menu-icon {
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -701,8 +834,8 @@
         <!-- Main Chat -->
         <div class="chat-main">
             <div class="chat-header">
-                <div class="chat-stream-name">#fucking-miners</div>
-                <div class="chat-topic">Общий чат майнеров</div>
+                <div class="chat-stream-name" id="channelName">#fucking-miners</div>
+                <div class="chat-topic" id="channelTopic">Общий чат майнеров</div>
             </div>
             
             <div class="messages-container" id="messages">
@@ -710,12 +843,19 @@
             </div>
             
             <div class="input-area">
+                <div class="reply-container" id="replyContainer">
+                    <div class="reply-header">
+                        <div class="reply-to">Ответ <span id="replyToUser"></span></div>
+                        <button class="reply-close" onclick="cancelReply()">×</button>
+                    </div>
+                    <div class="reply-preview" id="replyPreview"></div>
+                </div>
                 <div class="input-wrapper">
                     <textarea id="messageInput" placeholder="Напишите сообщение..." rows="2"></textarea>
                     <button class="send-btn" onclick="sendMessage()">Отправить</button>
                 </div>
                 <div class="input-hint">
-                    <kbd>Enter</kbd> — отправить · <kbd>Shift+Enter</kbd> — новая строка
+                    <kbd>Enter</kbd> — отправить · <kbd>Shift+Enter</kbd> — новая строка · Клик правой кнопкой — ответить
                 </div>
             </div>
         </div>
@@ -764,6 +904,9 @@
         let pollInterval = null;
         let lastMessages = [];
         let lastUsers = {};
+        let currentChannel = 'fucking-miners';
+        let replyingTo = null;
+        let privateRecipient = null;
         
         // Initialize
         async function init() {
@@ -786,7 +929,92 @@
             document.addEventListener('keydown', handleKeyboard);
             document.getElementById('messageInput').addEventListener('keydown', handleInputKey);
             
+            // Context menu
+            document.addEventListener('contextmenu', handleContextMenu);
+            document.addEventListener('click', hideContextMenu);
+            
             console.log('=== INIT COMPLETE ===');
+        }
+        
+        // Context menu for replies
+        function handleContextMenu(e) {
+            const messageEl = e.target.closest('.message');
+            if (!messageEl) return;
+            
+            e.preventDefault();
+            
+            const messageId = messageEl.dataset.id;
+            const author = messageEl.dataset.author;
+            const text = messageEl.dataset.text;
+            
+            showContextMenu(e.clientX, e.clientY, {
+                id: messageId,
+                author: author,
+                text: text
+            });
+        }
+        
+        function showContextMenu(x, y, data) {
+            let menu = document.getElementById('contextMenu');
+            if (!menu) {
+                menu = document.createElement('div');
+                menu.id = 'contextMenu';
+                menu.className = 'context-menu';
+                document.body.appendChild(menu);
+            }
+            
+            menu.innerHTML = `
+                <div class="context-menu-item" onclick="replyToMessage('${data.id}', '${data.author}', '${data.text}')">
+                    <span class="context-menu-icon">↩️</span>
+                    <span>Ответить</span>
+                </div>
+                <div class="context-menu-item" onclick="replyPrivate('${data.author}')">
+                    <span class="context-menu-icon">🔒</span>
+                    <span>Личное сообщение</span>
+                </div>
+                <div class="context-menu-item" onclick="copyMessage('${data.text}')">
+                    <span class="context-menu-icon">📋</span>
+                    <span>Копировать</span>
+                </div>
+            `;
+            
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('active');
+        }
+        
+        function hideContextMenu() {
+            const menu = document.getElementById('contextMenu');
+            if (menu) {
+                menu.classList.remove('active');
+            }
+        }
+        
+        function replyToMessage(id, author, text) {
+            replyingTo = { id, author, text };
+            document.getElementById('replyContainer').classList.add('active');
+            document.getElementById('replyToUser').textContent = author;
+            document.getElementById('replyPreview').textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
+            document.getElementById('messageInput').focus();
+            hideContextMenu();
+        }
+        
+        function cancelReply() {
+            replyingTo = null;
+            document.getElementById('replyContainer').classList.remove('active');
+        }
+        
+        function replyPrivate(author) {
+            privateRecipient = author;
+            setChannel('private');
+            document.querySelector('.chat-topic').textContent = `Личные с ${author}`;
+            document.getElementById('messageInput').placeholder = `Сообщение для ${author}...`;
+            hideContextMenu();
+        }
+        
+        function copyMessage(text) {
+            navigator.clipboard.writeText(text);
+            hideContextMenu();
         }
         
         // Keyboard shortcuts

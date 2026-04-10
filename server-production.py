@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fucking Miners Chat Server
-Полноценный сервер для синхронизации сообщений
+Fucking Miners Chat Server v2.0
+С поддержкой личных сообщений и ответов
 """
 
 from flask import Flask, jsonify, request
@@ -68,17 +68,41 @@ def index():
 
 @app.route('/api/messages', methods=['GET'])
 def get_messages():
-    """Get all messages"""
-    return jsonify(data.get('messages', [])[-100:])
+    """Get all messages (public channel)"""
+    # Return only public messages (no recipient)
+    public_messages = [m for m in data.get('messages', []) if not m.get('recipient')]
+    return jsonify(public_messages[-100:])
+
+@app.route('/api/messages/private', methods=['GET'])
+def get_private_messages():
+    """Get private messages between users"""
+    user1 = request.args.get('user1')
+    user2 = request.args.get('user2')
+    
+    if not user1 or not user2:
+        return jsonify({'error': 'Missing user1 or user2'}), 400
+    
+    # Get messages between these two users
+    private_messages = [
+        m for m in data.get('messages', [])
+        if m.get('recipient') in [user1, user2] and m.get('user') in [user1, user2]
+    ]
+    
+    return jsonify(private_messages[-100:])
 
 @app.route('/api/messages', methods=['POST'])
 def add_message():
     """Add a new message"""
     content = request.json
+    
     message = {
+        'id': str(int(datetime.now().timestamp() * 1000)),  # Unique ID
         'user': content.get('user'),
         'text': content.get('text'),
-        'time': content.get('time', int(datetime.now().timestamp() * 1000))
+        'time': content.get('time', int(datetime.now().timestamp() * 1000)),
+        'recipient': content.get('recipient'),  # For private messages
+        'replyTo': content.get('replyTo'),  # For replies
+        'channel': content.get('channel', 'fucking-miners')  # Channel
     }
     
     if not message['user'] or not message['text']:
@@ -158,11 +182,15 @@ def get_stats():
     total_users = len(data.get('users', {}))
     online_users = sum(1 for u in data.get('users', {}).values() if u.get('online'))
     total_messages = len(data.get('messages', []))
+    public_messages = len([m for m in data.get('messages', []) if not m.get('recipient')])
+    private_messages = total_messages - public_messages
     
     return jsonify({
         'totalUsers': total_users,
         'onlineUsers': online_users,
         'totalMessages': total_messages,
+        'publicMessages': public_messages,
+        'privateMessages': private_messages,
         'uptime': str(datetime.now())
     })
 
@@ -175,16 +203,17 @@ def clear_messages():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    print('=== Fucking Miners Chat Server ===')
+    print('=== Fucking Miners Chat Server v2.0 ===')
     print('Running on http://0.0.0.0:5004')
     print('')
     print('API endpoints:')
-    print('  GET  /              - Health check')
-    print('  GET  /api/messages  - Get messages')
-    print('  POST /api/messages  - Send message')
-    print('  GET  /api/users     - Get users')
-    print('  POST /api/users     - Register user')
-    print('  GET  /api/stats     - Statistics')
+    print('  GET  /                    - Health check')
+    print('  GET  /api/messages        - Get public messages')
+    print('  GET  /api/messages/private - Get private messages')
+    print('  POST /api/messages        - Send message')
+    print('  GET  /api/users           - Get users')
+    print('  POST /api/users           - Register user')
+    print('  GET  /api/stats           - Statistics')
     print('')
     logger.info("Server started on port 5004")
     app.run(host='0.0.0.0', port=5004, debug=False)
