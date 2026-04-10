@@ -12,6 +12,7 @@
         }
         
         :root {
+            /* Dark theme (default) */
             --bg: #0d0d0d;
             --bg-dark: #080808;
             --bg-light: #151515;
@@ -26,6 +27,22 @@
             --mention: #ff9800;
             --border: #222222;
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+        }
+        
+        [data-theme="light"] {
+            --bg: #f5f5f5;
+            --bg-dark: #ffffff;
+            --bg-light: #fafafa;
+            --bg-highlight: #e8e8e8;
+            --text: #1a1a1a;
+            --text-dim: #666666;
+            --text-bright: #333333;
+            --accent: #0066ff;
+            --accent-hover: #0044cc;
+            --online: #00aa00;
+            --offline: #999999;
+            --mention: #ff6600;
+            --border: #dddddd;
         }
         
         body {
@@ -58,6 +75,23 @@
             justify-content: space-between;
             padding: 0 10px;
             font-size: 12px;
+        }
+        
+        .theme-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            margin-right: 10px;
+        }
+        
+        .theme-btn:hover {
+            background: var(--accent);
+            color: #000;
         }
         
         .chat-main {
@@ -170,6 +204,33 @@
             background: var(--bg-light);
             border-radius: 4px;
             border-left: 2px solid var(--accent);
+            position: relative;
+            touch-action: pan-y;
+            user-select: none;
+            transition: transform 0.2s ease;
+        }
+        
+        .message.swiping {
+            transform: translateX(-50px);
+            background: var(--bg-highlight);
+        }
+        
+        .message.swiped {
+            transform: translateX(-60px);
+        }
+        
+        .swipe-hint {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 18px;
+        }
+        
+        .message.swiping .swipe-hint {
+            opacity: 1;
         }
         
         .message-author {
@@ -511,6 +572,7 @@
         <div class="top-bar">
             <div class="logo">⚡ Fucking Miners</div>
             <div class="top-bar-right">
+                <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="Переключить тему">🌙</button>
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator"></span>
                     <span>Подключено</span>
@@ -584,8 +646,27 @@
         let lastMessages = [];
         let lastUsers = {};
         let pollInterval = null;
+        let currentTheme = 'dark';
+        
+        // Theme toggle
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('fm_theme', currentTheme);
+            document.getElementById('themeBtn').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        }
+        
+        function loadTheme() {
+            const saved = localStorage.getItem('fm_theme');
+            if (saved === 'light') {
+                currentTheme = 'light';
+                document.body.setAttribute('data-theme', 'light');
+                document.getElementById('themeBtn').textContent = '☀️';
+            }
+        }
         
         async function init() {
+            loadTheme();
             const savedUser = localStorage.getItem('fm_currentUser');
             if (savedUser) {
                 currentUser = savedUser;
@@ -687,15 +768,72 @@
                 
                 if (msg.user !== lastUser) {
                     if (i > 0) html += '</div>';
-                    html += `<div class="message msg-color-${colorClass}"><div class="message-header"><span class="message-author user-color-${colorClass}">${msg.user}</span><span class="message-time">${time}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                    html += `<div class="message msg-color-${colorClass}" data-index="${i}" ontouchstart="handleTouchStart(event, ${i})" ontouchmove="handleTouchMove(event, ${i})" ontouchend="handleTouchEnd(event, ${i})"><div class="swipe-hint">↩️</div><div class="message-header"><span class="message-author user-color-${colorClass}">${msg.user}</span><span class="message-time">${time}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 } else {
-                    html += `<div class="message msg-color-${colorClass}" style="margin-top:4px;padding:6px 10px;background:var(--bg-light);"><div class="message-text">${escapeHtml(msg.text)}</div></div>`;
+                    html += `<div class="message msg-color-${colorClass}" style="margin-top:4px;padding:6px 10px;background:var(--bg-light);" data-index="${i}" ontouchstart="handleTouchStart(event, ${i})" ontouchmove="handleTouchMove(event, ${i})" ontouchend="handleTouchEnd(event, ${i})"><div class="swipe-hint">↩️</div><div class="message-text">${escapeHtml(msg.text)}</div></div>`;
                 }
                 lastUser = msg.user;
             });
             
             container.innerHTML = html;
             container.scrollTop = container.scrollHeight;
+        }
+        
+        // Swipe to reply
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isSwiping = false;
+        let swipedIndex = -1;
+        
+        function handleTouchStart(e, index) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = false;
+            swipedIndex = -1;
+        }
+        
+        function handleTouchMove(e, index) {
+            if (!touchStartX) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const diffX = touchStartX - touchX;
+            const diffY = Math.abs(touchStartY - touchY);
+            
+            // Only horizontal swipe
+            if (diffY > 30) return;
+            
+            // Swipe left (reply)
+            if (diffX > 30) {
+                isSwiping = true;
+                const msg = e.target.closest('.message');
+                if (msg) {
+                    msg.classList.add('swiping');
+                }
+            }
+        }
+        
+        function handleTouchEnd(e, index) {
+            if (isSwiping && swipedIndex === -1) {
+                // Get message data
+                const messages = lastMessages;
+                if (messages && messages[index]) {
+                    const msg = messages[index];
+                    replyToMessage(msg.user, msg.text);
+                }
+            }
+            
+            // Reset
+            const msgs = document.querySelectorAll('.message');
+            msgs.forEach(m => m.classList.remove('swiping'));
+            isSwiping = false;
+            touchStartX = 0;
+        }
+        
+        function replyToMessage(user, text) {
+            const input = document.getElementById('messageInput');
+            input.value = `> ${user}: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}\n\n`;
+            input.focus();
         }
         
         function escapeHtml(text) {
