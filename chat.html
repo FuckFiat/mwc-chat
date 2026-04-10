@@ -147,6 +147,17 @@
             color: var(--text);
             font-weight: 600;
             font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .logo:hover {
+            color: var(--accent);
+        }
+        
+        .logo:active {
+            transform: scale(0.95);
         }
         
         .top-bar-right {
@@ -208,6 +219,11 @@
             font-size: 10px;
             cursor: pointer;
             font-family: var(--font-mono);
+        }
+        
+        .logout-btn:hover {
+            background: var(--bg-highlight);
+            color: var(--text);
         }
         
         .chat-stream-name {
@@ -588,10 +604,7 @@
 <body>
     <div class="app">
         <div class="top-bar">
-            <div class="top-bar-left" style="display: flex; align-items: center; gap: 10px;">
-                <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="Переключить тему">🌙</button>
-                <div class="logo">⚡ Fucking Miners</div>
-            </div>
+            <div class="logo" onclick="toggleTheme()" style="cursor: pointer;" title="Переключить тему">⚡ Fucking Miners</div>
             <div class="top-bar-right">
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-indicator"></span>
@@ -673,7 +686,11 @@
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', currentTheme);
             localStorage.setItem('fm_theme', currentTheme);
-            document.getElementById('themeBtn').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+            // Change logo emoji
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                logo.textContent = (currentTheme === 'dark' ? '⚡' : '☀️') + ' Fucking Miners';
+            }
         }
         
         function loadTheme() {
@@ -681,7 +698,8 @@
             if (saved === 'light') {
                 currentTheme = 'light';
                 document.body.setAttribute('data-theme', 'light');
-                document.getElementById('themeBtn').textContent = '☀️';
+                const logo = document.querySelector('.logo');
+                if (logo) logo.textContent = '☀️ Fucking Miners';
             }
         }
         
