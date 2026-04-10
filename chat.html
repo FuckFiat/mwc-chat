@@ -268,8 +268,25 @@
             color: #000;
         }
         
+        .user-avatar.zero-admin {
+            background: linear-gradient(135deg, #00ff00, #00ff88);
+            animation: avatar-pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        @keyframes avatar-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+        }
+        
         .user-name {
             font-size: 11px;
+        }
+        
+        .user-name.zero-admin {
+            color: #00ff00;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
         }
         
         .logout-btn {
@@ -435,6 +452,75 @@
         [data-theme="light"] .input-wrapper textarea:focus {
             border-color: #00aa00;
             box-shadow: 0 0 15px rgba(0, 170, 0, 0.3), inset 0 0 8px rgba(0, 170, 0, 0.1);
+        }
+        
+        /* ZeroCo0L special styling */
+        .message.zero-user {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.05), rgba(0, 255, 100, 0.1));
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
+            animation: zero-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes zero-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        .message-author.zero-admin {
+            background: linear-gradient(90deg, #00ff00, #00ff88, #00ff00);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-flow 2s linear infinite;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        .message.zero-user .message-author {
+            text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        /* Typing dots animation */
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+        }
+        
+        .typing-dots span {
+            width: 4px;
+            height: 4px;
+            background: #00ff00;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing-dot 1.4s ease-in-out infinite;
+            box-shadow: 0 0 6px #00ff00;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing-dot {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            30% {
+                transform: translateY(-6px);
+                opacity: 1;
+            }
         }
         
         .send-btn {
@@ -870,8 +956,15 @@
         
         function updateUserUI() {
             if (currentUser) {
+                const isZero = currentUser.toLowerCase() === 'zeroco0l';
                 document.getElementById('userName').textContent = currentUser;
                 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+                
+                // ZeroCo0L special styling
+                if (isZero) {
+                    document.getElementById('userAvatar').classList.add('zero-admin');
+                    document.getElementById('userName').classList.add('zero-admin');
+                }
             }
         }
         
@@ -936,11 +1029,14 @@
                 const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 const colorClass = userColors[msg.user];
                 const msgId = msg.id || msg.time;
+                const isZeroUser = msg.user.toLowerCase() === 'zeroco0l';
+                const zeroClass = isZeroUser ? 'zero-user' : '';
+                const zeroAdminClass = isZeroUser ? 'zero-admin' : '';
                 
                 if (msg.user !== lastUser) {
                     if (i > 0) html += '</div>';
                     html += `
-                        <div class="message msg-color-${colorClass}" 
+                        <div class="message msg-color-${colorClass} ${zeroClass}" 
                              data-msg-id="${msgId}" 
                              data-msg-user="${msg.user}" 
                              data-msg-text="${escapeHtml(msg.text)}">
@@ -951,14 +1047,15 @@
                                 </svg>
                             </div>
                             <div class="message-header">
-                                <span class="message-author user-color-${colorClass}">${msg.user}</span>
+                                <span class="message-author user-color-${colorClass} ${zeroAdminClass}">${msg.user}</span>
                                 <span class="message-time">${time}</span>
+                                ${isZeroUser ? '<span class="typing-dots"><span></span><span></span><span></span></span>' : ''}
                             </div>
                             <div class="message-text">${escapeHtml(msg.text)}</div>
                         </div>`;
                 } else {
                     html += `
-                        <div class="message msg-color-${colorClass}" 
+                        <div class="message msg-color-${colorClass} ${zeroClass}" 
                              style="margin-top:4px;padding:6px 10px;background:var(--bg-light);"
                              data-msg-id="${msgId}" 
                              data-msg-user="${msg.user}" 
