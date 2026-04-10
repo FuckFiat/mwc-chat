@@ -3,231 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fucking Miners — Чат майнеров</title>
+    <title>Fucking Miners — Terminal Chat</title>
     <style>
-        /* Theme variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         :root {
-            /* Default: Cyberpunk */
-            --bg: #0a0a0a;
-            --bg-card: #111111;
-            --bg-input: #0a0a0a;
-            --text: #ffffff;
-            --text-dim: #888888;
-            --accent: #FFD700;
-            --accent-alt: #FFA500;
-            --online: #4caf50;
-            --border: rgba(255, 215, 0, 0.1);
-            --message-bg: transparent;
-            --author-color: #FFD700;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
-        }
-        
-        [data-theme="terminal"] {
-            --bg: #000000;
-            --bg-card: #000000;
-            --bg-input: #000000;
-            --text: #00ff00;
-            --text-dim: #008800;
-            --accent: #00ff00;
-            --accent-alt: #00cc00;
-            --online: #00ff00;
-            --border: #003300;
-            --message-bg: transparent;
-            --author-color: #00ff00;
-            --font-family: 'Courier New', 'Consolas', monospace;
-        }
-        
-        [data-theme="minimal"] {
-            --bg: #ffffff;
-            --bg-card: #f8f8f8;
-            --bg-input: #ffffff;
-            --text: #333333;
-            --text-dim: #888888;
-            --accent: #0066ff;
-            --accent-alt: #0044cc;
-            --online: #00cc00;
-            --border: #e0e0e0;
-            --message-bg: #f8f8f8;
-            --author-color: #0066ff;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        
-        [data-theme="dark-purple"] {
-            --bg: #1a1a2e;
-            --bg-card: #16213e;
-            --bg-input: #1a1a2e;
-            --text: #eaeaea;
-            --text-dim: #8892b0;
-            --accent: #e94560;
-            --accent-alt: #ff6b6b;
-            --online: #4ecca3;
-            --border: rgba(233, 69, 96, 0.2);
-            --message-bg: #16213e;
-            --author-color: #e94560;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        
-        [data-theme="matrix"] {
-            --bg: #000000;
-            --bg-card: #001100;
-            --bg-input: #000000;
-            --text: #00ff00;
-            --text-dim: #008800;
-            --accent: #00ff00;
-            --accent-alt: #00ff00;
-            --online: #00ff00;
-            --border: #003300;
-            --message-bg: rgba(0, 255, 0, 0.05);
-            --author-color: #00ff00;
-            --font-family: 'Courier New', 'Consolas', monospace;
-        }
-        
-        [data-theme="github"] {
-            --bg: #0d1117;
-            --bg-card: #161b22;
-            --bg-input: #0d1117;
-            --text: #c9d1d9;
-            --text-dim: #8b949e;
-            --accent: #58a6ff;
-            --accent-alt: #1f6feb;
-            --online: #3fb950;
-            --border: #30363d;
-            --message-bg: #161b22;
-            --author-color: #58a6ff;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-        }
-        
-        [data-theme="brutal"] {
-            --bg: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #ffffff;
-            --text: #000000;
-            --text-dim: #666666;
-            --accent: #000000;
-            --accent-alt: #333333;
-            --online: #00ff00;
-            --border: #000000;
-            --message-bg: #f0f0f0;
-            --author-color: #000000;
-            --font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
-        }
-        
-        [data-theme="terminal-pro"] {
             --bg: #1a1b26;
-            --bg-card: #1a1b26;
-            --bg-input: #1a1b26;
-            --text: #a9b1d6;
+            --bg-dark: #16161e;
+            --bg-light: #24283b;
+            --bg-highlight: #292e42;
+            --text: #c0caf5;
             --text-dim: #565f89;
+            --text-bright: #a9b1d6;
             --accent: #7aa2f7;
-            --accent-alt: #7dcfff;
+            --accent-hover: #7dcfff;
             --online: #9ece6a;
+            --offline: #565f89;
+            --mention: #ff9e64;
             --border: #292e42;
-            --message-bg: #24283b;
-            --author-color: #bb9af7;
-            --font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: var(--font-family);
+            font-family: var(--font-mono);
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
         
-        /* Theme bar */
-        .theme-bar {
-            background: var(--bg-card);
-            border-bottom: 2px solid var(--border);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+        /* Main Layout - 3 columns */
+        .app {
+            display: grid;
+            grid-template-columns: 200px 1fr 220px;
+            grid-template-rows: 32px 1fr;
+            height: 100vh;
         }
         
-        .theme-btn {
-            padding: 8px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-family);
-        }
-        
-        .theme-btn:hover, .theme-btn.active {
-            background: var(--accent);
-            color: #000;
-            border-color: var(--accent);
-        }
-        
-        .theme-btn.active {
-            font-weight: 600;
-        }
-        
-        .container {
-            display: flex;
-            height: calc(100vh - 50px);
-        }
-        
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
-        }
-        
-        .chat-header {
-            padding: 15px 20px;
-            background: var(--bg-card);
+        /* Top bar */
+        .top-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-dark);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 0 15px;
+            font-size: 12px;
         }
         
-        .chat-title {
-            font-size: 18px;
-            font-weight: 700;
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .user-info:hover {
+            background: var(--bg-highlight);
+        }
+        
+        .user-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .user-name {
+            font-size: 12px;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+            background: var(--bg-highlight);
+            color: var(--text);
+        }
+        
+        /* Left sidebar - Navigation */
+        .sidebar-left {
+            background: var(--bg-dark);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .nav-section {
+            padding: 8px;
+        }
+        
+        .nav-title {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-highlight);
+        }
+        
+        .nav-item.active {
+            background: var(--bg-light);
+            color: var(--text-bright);
+        }
+        
+        .nav-hotkey {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-left: auto;
+        }
+        
+        .nav-badge {
+            background: var(--mention);
+            color: #000;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .streams {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .stream-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        
+        .stream-item:hover {
+            background: var(--bg-highlight);
+        }
+        
+        .stream-item.active {
+            background: var(--bg-light);
+        }
+        
+        .stream-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+        
+        .stream-name {
+            flex: 1;
+        }
+        
+        .stream-count {
+            font-size: 10px;
+            color: var(--mention);
+            background: rgba(255, 158, 100, 0.2);
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+        
+        .search-box {
+            padding: 8px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 6px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 11px;
+            font-family: var(--font-mono);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        /* Main chat area */
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chat-stream-name {
+            font-size: 14px;
+            font-weight: 600;
             color: var(--accent);
         }
         
-        .messages {
+        .chat-topic {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        
+        .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: var(--bg);
+            padding: 15px;
         }
         
-        .message {
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s ease;
-            padding: 12px 15px;
-            background: var(--message-bg);
-            border-radius: 12px;
-            border-left: 3px solid var(--accent);
+        .message-group {
+            margin-bottom: 20px;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message-header {
+        .message-group-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         
         .message-author {
-            font-weight: 700;
-            color: var(--author-color);
-            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 13px;
         }
         
         .message-time {
@@ -236,188 +301,228 @@
         }
         
         .message-text {
-            font-size: 15px;
+            font-size: 13px;
             line-height: 1.6;
-            color: var(--text);
+            color: var(--text-bright);
+            padding-left: 0;
         }
         
-        .message-input {
-            padding: 15px;
-            background: var(--bg-card);
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        /* Input area */
+        .input-area {
+            background: var(--bg-dark);
             border-top: 1px solid var(--border);
+            padding: 10px 15px;
         }
         
         .input-wrapper {
             display: flex;
             gap: 10px;
+            align-items: flex-end;
         }
         
-        .input-wrapper input {
+        .input-wrapper textarea {
             flex: 1;
-            padding: 14px 18px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background: var(--bg-input);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
             color: var(--text);
-            font-size: 15px;
-            font-family: var(--font-family);
-            transition: all 0.2s;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            padding: 10px;
+            resize: none;
+            min-height: 60px;
+            max-height: 150px;
         }
         
-        .input-wrapper input:focus {
+        .input-wrapper textarea:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
         }
         
-        .btn-send {
-            padding: 14px 28px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+        .send-btn {
+            background: var(--accent);
             color: #000;
-            font-weight: 700;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            font-family: var(--font-family);
         }
         
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        .send-btn:hover {
+            background: var(--accent-hover);
         }
         
-        .online-panel {
-            width: 280px;
-            background: var(--bg-card);
+        .input-hint {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+        
+        .input-hint kbd {
+            background: var(--bg-highlight);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+        
+        /* Right sidebar - Users */
+        .sidebar-right {
+            background: var(--bg-dark);
+            border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            border-left: 1px solid var(--border);
+            overflow: hidden;
         }
         
-        .online-header {
-            padding: 18px;
+        .users-header {
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border);
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .online-count {
             font-size: 12px;
-            color: var(--text-dim);
-            margin-left: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .online-list {
+        .users-count {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        
+        .users-search {
+            padding: 8px;
+        }
+        
+        .users-search input {
+            width: 100%;
+            padding: 6px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 11px;
+            font-family: var(--font-mono);
+        }
+        
+        .users-list {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px;
         }
         
-        .online-user {
+        .user-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 4px;
+            transition: background 0.2s;
+            font-size: 12px;
         }
         
-        .online-user:hover {
-            background: rgba(255, 215, 0, 0.1);
+        .user-item:hover {
+            background: var(--bg-highlight);
         }
         
-        .online-avatar {
-            width: 40px;
-            height: 40px;
+        .user-avatar-small {
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 600;
             color: #000;
-            font-size: 16px;
         }
         
-        .online-info {
+        .user-info-small {
             flex: 1;
         }
         
-        .online-name {
-            font-weight: 600;
-            font-size: 14px;
+        .user-name-small {
+            font-size: 12px;
         }
         
-        .online-status {
-            font-size: 12px;
+        .user-status-small {
+            font-size: 10px;
             color: var(--online);
         }
         
-        .online-dot {
-            width: 10px;
-            height: 10px;
+        .user-status-small.offline {
+            color: var(--text-dim);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--online);
-            box-shadow: 0 0 8px var(--online);
-            animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .status-dot.offline {
+            background: var(--text-dim);
         }
         
-        .user-section {
-            padding: 15px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .user-card {
+        /* Connection status */
+        .connection-status {
+            font-size: 11px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-            transition: all 0.2s;
+            gap: 5px;
         }
         
-        .user-card:hover {
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .user-avatar {
-            width: 44px;
-            height: 44px;
+        .status-indicator {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #000;
-            font-size: 18px;
+            background: var(--online);
         }
         
-        .user-info {
-            flex: 1;
+        .status-indicator.error {
+            background: #f7768e;
         }
         
-        .user-name {
-            font-weight: 600;
-            font-size: 14px;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
         }
         
-        .user-status {
-            font-size: 12px;
-            color: var(--online);
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
         }
         
         /* Modal */
@@ -436,48 +541,43 @@
         }
         
         .modal-content {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 35px;
-            width: 420px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            width: 400px;
             max-width: 90%;
-            border: 2px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
         
         .modal-title {
             text-align: center;
-            font-size: 28px;
-            margin-bottom: 25px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--accent);
         }
         
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-size: 11px;
             color: var(--text-dim);
-            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 600;
         }
         
         .form-group input {
             width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background: var(--bg-input);
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
             color: var(--text);
-            font-size: 15px;
-            font-family: var(--font-family);
+            font-family: var(--font-mono);
+            font-size: 13px;
         }
         
         .form-group input:focus {
@@ -487,246 +587,149 @@
         
         .btn-submit {
             width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            padding: 12px;
+            background: var(--accent);
             color: #000;
-            font-weight: 700;
+            border: none;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-family);
-            font-size: 15px;
+            transition: background 0.2s;
         }
         
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            background: var(--accent-hover);
         }
         
         .modal-footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
+            font-size: 12px;
             color: var(--text-dim);
-            font-size: 14px;
         }
         
         .modal-footer a {
             color: var(--accent);
             text-decoration: none;
-            font-weight: 600;
         }
         
         .error {
-            color: #ff4444;
+            color: #f7768e;
             text-align: center;
-            margin: 12px 0;
-            font-size: 14px;
-        }
-        
-        .connection-status {
+            margin: 10px 0;
             font-size: 12px;
-            color: var(--online);
-            font-weight: 600;
         }
         
-        .connection-status.error {
-            color: #ff4444;
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-        
-        @media (max-width: 768px) {
-            .online-panel {
-                display: none;
-            }
-            .theme-bar {
-                justify-content: center;
-            }
-        }
-        
-        /* Matrix theme special */
-        [data-theme="matrix"] .message {
-            text-shadow: 0 0 5px var(--accent);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
-        }
-        
-        [data-theme="matrix"] .online-dot {
-            animation: pulse 1s infinite;
-        }
-        
-        /* Brutal theme special */
-        [data-theme="brutal"] .message {
-            border-radius: 0;
-            border: 2px solid #000;
-            border-left: 4px solid #000;
-        }
-        
-        [data-theme="brutal"] .btn-send {
-            border-radius: 0;
-            border: 2px solid #000;
-        }
-        
-        [data-theme="brutal"] .modal-content {
-            border-radius: 0;
-            border: 3px solid #000;
-        }
-        
-        /* Terminal Pro theme special - Zulip style */
-        [data-theme="terminal-pro"] .container {
-            display: grid;
-            grid-template-columns: 200px 1fr 220px;
-        }
-        
-        [data-theme="terminal-pro"] .main {
-            border-right: none;
-        }
-        
-        [data-theme="terminal-pro"] .theme-bar {
-            border-bottom: 1px solid var(--border);
-            padding: 8px 15px;
-        }
-        
-        [data-theme="terminal-pro"] .theme-btn {
-            padding: 6px 10px;
-            font-size: 11px;
-        }
-        
-        [data-theme="terminal-pro"] .chat-header {
-            border-bottom: 1px solid var(--border);
-            padding: 10px 15px;
-        }
-        
-        [data-theme="terminal-pro"] .chat-title {
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
-            font-size: 14px;
-        }
-        
-        [data-theme="terminal-pro"] .online-panel {
-            width: 220px;
-            border-left: 1px solid var(--border);
-            border-right: none;
-        }
-        
-        [data-theme="terminal-pro"] .online-header {
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
-            font-size: 12px;
-            padding: 10px;
-        }
-        
-        [data-theme="terminal-pro"] .message {
-            padding: 8px 12px;
-            margin-bottom: 4px;
-            border-left: 3px solid var(--accent);
-            background: var(--message-bg);
-        }
-        
-        [data-theme="terminal-pro"] .message-author {
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 50px;
             font-size: 13px;
-        }
-        
-        [data-theme="terminal-pro"] .message-text {
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
-            font-size: 13px;
-        }
-        
-        [data-theme="terminal-pro"] .online-user {
-            padding: 8px;
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
-            font-size: 12px;
-        }
-        
-        [data-theme="terminal-pro"] .online-avatar {
-            width: 32px;
-            height: 32px;
-            font-size: 12px;
-        }
-        
-        [data-theme="terminal-pro"] .online-name {
-            font-size: 12px;
-        }
-        
-        [data-theme="terminal-pro"] .online-status {
-            font-size: 10px;
-        }
-        
-        @media (max-width: 1024px) {
-            [data-theme="terminal-pro"] .container {
-                grid-template-columns: 1fr;
-            }
-            [data-theme="terminal-pro"] .online-panel {
-                display: none;
-            }
         }
     </style>
 </head>
-<body data-theme="cyberpunk">
-    <div class="theme-bar">
-        <button class="theme-btn active" onclick="setTheme('cyberpunk')">🤖 Cyberpunk</button>
-        <button class="theme-btn" onclick="setTheme('terminal')">💻 Terminal</button>
-        <button class="theme-btn" onclick="setTheme('minimal')">✨ Minimal</button>
-        <button class="theme-btn" onclick="setTheme('dark-purple')">💜 Purple</button>
-        <button class="theme-btn" onclick="setTheme('matrix')">🟢 Matrix</button>
-        <button class="theme-btn" onclick="setTheme('github')">🐙 GitHub</button>
-        <button class="theme-btn" onclick="setTheme('brutal')">⬛ Brutal</button>
-        <button class="theme-btn" onclick="setTheme('terminal-pro')">🖥️ Terminal Pro</button>
-        <button class="btn-send" onclick="logout()" style="padding: 8px 16px; font-size: 12px; margin-left: auto;">Выход</button>
-    </div>
-    
-    <div class="container">
-        <div class="main">
+<body>
+    <div class="app">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="logo">⚡ Fucking Miners</div>
+            </div>
+            <div class="top-bar-right">
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-indicator"></span>
+                    <span>Подключено</span>
+                </div>
+                <div class="user-info" onclick="logout()">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-name" id="userName">Гость</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Выход</button>
+            </div>
+        </div>
+        
+        <!-- Left Sidebar -->
+        <div class="sidebar-left">
+            <div class="nav-section">
+                <div class="nav-title">Навигация</div>
+                <div class="nav-item active">
+                    <span>📋</span>
+                    <span>Все сообщения</span>
+                    <span class="nav-hotkey">[a]</span>
+                </div>
+                <div class="nav-item">
+                    <span>🔒</span>
+                    <span>Личные</span>
+                    <span class="nav-hotkey">[p]</span>
+                </div>
+                <div class="nav-item">
+                    <span>🔔</span>
+                    <span>Упоминания</span>
+                    <span class="nav-hotkey">[@]</span>
+                </div>
+            </div>
+            
+            <div class="streams">
+                <div class="nav-title">Каналы</div>
+                <div class="stream-item active">
+                    <div class="stream-dot"></div>
+                    <div class="stream-name">fucking-miners</div>
+                    <div class="stream-count" id="unreadCount">0</div>
+                </div>
+                <div class="stream-item">
+                    <div class="stream-dot"></div>
+                    <div class="stream-name">general</div>
+                </div>
+                <div class="stream-item">
+                    <div class="stream-dot"></div>
+                    <div class="stream-name">mining</div>
+                </div>
+                <div class="stream-item">
+                    <div class="stream-dot"></div>
+                    <div class="stream-name">trading</div>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Поиск [q]">
+            </div>
+        </div>
+        
+        <!-- Main Chat -->
+        <div class="chat-main">
             <div class="chat-header">
-                <div>
-                    <div class="chat-title">#fucking-miners</div>
-                </div>
-                <span class="connection-status" id="connectionStatus">● Подключено</span>
+                <div class="chat-stream-name">#fucking-miners</div>
+                <div class="chat-topic">Общий чат майнеров</div>
             </div>
             
-            <div class="messages" id="messages">
-                <div style="text-align: center; color: var(--text-dim); padding: 50px;">
-                    Загрузка сообщений...
-                </div>
+            <div class="messages-container" id="messages">
+                <div class="empty-state">Загрузка сообщений...</div>
             </div>
             
-            <div class="message-input">
+            <div class="input-area">
                 <div class="input-wrapper">
-                    <input type="text" id="messageInput" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
-                    <button class="btn-send" onclick="sendMessage()">→</button>
+                    <textarea id="messageInput" placeholder="Напишите сообщение..." rows="2"></textarea>
+                    <button class="send-btn" onclick="sendMessage()">Отправить</button>
+                </div>
+                <div class="input-hint">
+                    <kbd>Enter</kbd> — отправить · <kbd>Shift+Enter</kbd> — новая строка
                 </div>
             </div>
         </div>
         
-        <div class="online-panel">
-            <div class="online-header">
-                Онлайн<span class="online-count" id="onlineCount">(0)</span>
+        <!-- Right Sidebar -->
+        <div class="sidebar-right">
+            <div class="users-header">
+                Пользователи
+                <span class="users-count" id="onlineCount">(0)</span>
             </div>
-            <div class="online-list" id="onlineList"></div>
-            <div class="user-section">
-                <div class="user-card" onclick="logout()">
-                    <div class="user-avatar" id="userAvatar">?</div>
-                    <div class="user-info">
-                        <div class="user-name" id="userName">Гость</div>
-                        <div class="user-status" id="userStatus">В сети</div>
-                    </div>
-                </div>
+            <div class="users-search">
+                <input type="text" placeholder="Поиск [w]" id="userSearch">
             </div>
+            <div class="users-list" id="usersList"></div>
         </div>
     </div>
     
@@ -753,42 +756,18 @@
     </div>
 
     <script>
-        // API URL - VPS server
+        // API URL
         const API_URL = 'http://95.140.148.73:5004/api';
         
         // State
         let currentUser = null;
-        let currentTheme = 'cyberpunk';
         let pollInterval = null;
         let lastMessages = [];
         let lastUsers = {};
         
-        // Theme
-        function setTheme(theme) {
-            currentTheme = theme;
-            document.body.dataset.theme = theme;
-            localStorage.setItem('fm_theme', theme);
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-        
-        function loadTheme() {
-            const saved = localStorage.getItem('fm_theme');
-            if (saved) {
-                currentTheme = saved;
-                document.body.dataset.theme = saved;
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    if (btn.textContent.toLowerCase().includes(saved)) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
-        }
-        
         // Initialize
         async function init() {
             console.log('=== INIT ===');
-            loadTheme();
             
             const savedUser = localStorage.getItem('fm_currentUser');
             if (savedUser) {
@@ -802,22 +781,38 @@
             
             await loadMessages();
             await loadUsers();
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+            document.getElementById('messageInput').addEventListener('keydown', handleInputKey);
+            
             console.log('=== INIT COMPLETE ===');
+        }
+        
+        // Keyboard shortcuts
+        function handleKeyboard(e) {
+            if (e.key === 'q' && !e.target.matches('input, textarea')) {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+        }
+        
+        function handleInputKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         }
         
         // API Calls
         async function apiGet(endpoint) {
             try {
                 const response = await fetch(`${API_URL}${endpoint}`);
-                const status = document.getElementById('connectionStatus');
-                status.textContent = '● Подключено';
-                status.classList.remove('error');
+                updateConnectionStatus(true);
                 return await response.json();
             } catch (error) {
                 console.error('API Error:', error);
-                const status = document.getElementById('connectionStatus');
-                status.textContent = '● Ошибка соединения';
-                status.classList.add('error');
+                updateConnectionStatus(false);
                 return null;
             }
         }
@@ -836,13 +831,27 @@
             }
         }
         
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.innerHTML = '<span class="status-indicator"></span><span>Подключено</span>';
+            } else {
+                status.innerHTML = '<span class="status-indicator error"></span><span>Ошибка</span>';
+            }
+        }
+        
         // Messages
         async function loadMessages() {
             const messages = await apiGet('/messages');
             if (messages && JSON.stringify(messages) !== JSON.stringify(lastMessages)) {
                 lastMessages = messages;
                 renderMessages(messages);
+                updateUnreadCount(messages.length);
             }
+        }
+        
+        function updateUnreadCount(count) {
+            document.getElementById('unreadCount').textContent = count > 0 ? count : '';
         }
         
         async function sendMessage() {
@@ -872,25 +881,39 @@
             const container = document.getElementById('messages');
             
             if (!messages || messages.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 50px;">Нет сообщений. Начни первым!</div>';
+                container.innerHTML = '<div class="empty-state">Нет сообщений. Начни первым!</div>';
                 return;
             }
             
-            container.innerHTML = messages.map(msg => {
-                const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                return `
-                    <div class="message">
-                        <div class="message-header">
-                            <span class="message-author">${msg.user}</span>
-                            <span class="message-time">${time}</span>
-                        </div>
-                        <div class="message-text">${escapeHtml(msg.text)}</div>
-                    </div>
-                `;
-            }).join('');
+            // Group by user
+            let html = '';
+            let lastUser = null;
             
-            // Smooth scroll to bottom
-            const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+            messages.forEach((msg, index) => {
+                const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const isNewGroup = msg.user !== lastUser;
+                
+                if (isNewGroup) {
+                    if (index > 0) html += '</div>';
+                    html += `
+                        <div class="message">
+                            <div class="message-group-header">
+                                <span class="message-author">${msg.user}</span>
+                                <span class="message-time">${time}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                    `;
+                } else {
+                    html += `<div class="message-text" style="margin-top: 6px;">${escapeHtml(msg.text)}</div>`;
+                }
+                
+                lastUser = msg.user;
+            });
+            
+            container.innerHTML = html;
+            
+            // Scroll to bottom
+            const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 100;
             if (isScrolledToBottom) {
                 container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
             }
@@ -902,32 +925,22 @@
             return div.innerHTML;
         }
         
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        }
-        
         // Users
         async function loadUsers() {
             const users = await apiGet('/users');
             if (users && JSON.stringify(users) !== JSON.stringify(lastUsers)) {
                 lastUsers = users;
-                renderOnlineUsers(users);
+                renderUsers(users);
             }
         }
         
         async function syncUser() {
             if (!currentUser) return;
-            
-            await apiPost('/users', {
-                username: currentUser,
-                online: true
-            });
+            await apiPost('/users', { username: currentUser, online: true });
         }
         
-        function renderOnlineUsers(users) {
-            const list = document.getElementById('onlineList');
+        function renderUsers(users) {
+            const list = document.getElementById('usersList');
             const onlineUsers = Object.keys(users).filter(u => users[u].online);
             
             document.getElementById('onlineCount').textContent = `(${onlineUsers.length})`;
@@ -936,13 +949,13 @@
                 const u = users[user];
                 const avatar = u.avatar || user[0];
                 return `
-                    <div class="online-user">
-                        <div class="online-avatar">${avatar}</div>
-                        <div class="online-info">
-                            <div class="online-name">${user}</div>
-                            <div class="online-status">В сети</div>
+                    <div class="user-item">
+                        <div class="user-avatar-small">${avatar}</div>
+                        <div class="user-info-small">
+                            <div class="user-name-small">${user}</div>
+                            <div class="user-status-small">В сети</div>
                         </div>
-                        <div class="online-dot"></div>
+                        <div class="status-dot"></div>
                     </div>
                 `;
             }).join('');
@@ -987,7 +1000,6 @@
                 return;
             }
             
-            // Check if user exists
             const users = await apiGet('/users');
             
             if (isRegister) {
@@ -997,7 +1009,6 @@
                     return;
                 }
                 
-                // Register
                 await apiPost('/users', {
                     username: username,
                     password: hashCode(password),
@@ -1011,7 +1022,6 @@
                 await loadUsers();
                 startPolling();
             } else {
-                // Login
                 if (!users || !users[username]) {
                     errorDiv.textContent = 'Пользователь не найден';
                     errorDiv.style.display = 'block';
