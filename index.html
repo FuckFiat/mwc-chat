@@ -540,7 +540,7 @@
                     <label>Имя пользователя</label>
                     <input type="text" id="authUsername" placeholder="Ваш ник" required>
                 </div>
-                <div class="form-group" id="passwordGroup" style="display: none;">
+                <div class="form-group">
                     <label>Пароль</label>
                     <input type="password" id="authPassword" placeholder="Пароль">
                 </div>
@@ -638,18 +638,15 @@
             const title = document.getElementById('modalTitle');
             const button = document.getElementById('authButton');
             const switchText = document.getElementById('modalSwitch');
-            const passwordGroup = document.getElementById('passwordGroup');
             
             if (title.textContent === 'Вход в чат') {
                 title.textContent = 'Регистрация';
                 button.textContent = 'Создать аккаунт';
                 switchText.innerHTML = 'Уже есть аккаунт? <a href="#" onclick="switchAuth()">Войти</a>';
-                passwordGroup.style.display = 'block';
             } else {
                 title.textContent = 'Вход в чат';
                 button.textContent = 'Войти';
                 switchText.innerHTML = 'Нет аккаунта? <a href="#" onclick="switchAuth()">Регистрация</a>';
-                passwordGroup.style.display = 'none';
             }
         }
         
