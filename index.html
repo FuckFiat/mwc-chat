@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MWC Chat — Майнеры</title>
+    <title>Fucking Miners — Чат майнеров</title>
     <style>
         :root {
             /* Default: Dark theme */
@@ -458,7 +458,7 @@
 <body data-theme="dark">
     <div class="theme-bar">
         <button class="btn-theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
-        <span style="color: var(--text-dim); font-size: 12px;">MWC Chat v1.0</span>
+        <span style="color: var(--text-dim); font-size: 12px;">Fucking Miners v1.0</span>
         <button class="btn-send" onclick="logout()" style="padding: 8px 15px; font-size: 12px; margin-left: auto;">Выход</button>
     </div>
     
@@ -483,8 +483,8 @@
         <div class="main">
             <div class="chat-header">
                 <div>
-                    <div class="chat-title">#general</div>
-                    <div class="chat-topic">Чат майнеров MWC</div>
+                    <div class="chat-title">#fucking-miners</div>
+                    <div class="chat-topic">Fucking Miners — чат для настоящих майнеров</div>
                 </div>
                 <button class="btn-send" onclick="logout()" style="padding: 8px 15px; font-size: 12px;">Выход</button>
             </div>
@@ -544,13 +544,44 @@
         let users = {};
         let currentTheme = 'dark';
         
+        // Database operations
+        function initDatabase() {
+            console.log('=== INIT DATABASE ===');
+            
+            // Load users from localStorage
+            const savedUsers = localStorage.getItem('fm_users');
+            if (savedUsers) {
+                users = JSON.parse(savedUsers);
+                console.log('Loaded users:', Object.keys(users).length);
+            } else {
+                console.log('No users found, starting fresh');
+                users = {};
+                saveUsers();
+            }
+            
+            // Load messages
+            const savedMessages = localStorage.getItem('fm_messages');
+            if (savedMessages) {
+                messages = JSON.parse(savedMessages);
+                console.log('Loaded messages:', messages.length);
+            } else {
+                messages = [];
+                saveMessages();
+            }
+        }
+        
+        function saveDatabase() {
+            localStorage.setItem('fm_users', JSON.stringify(users));
+            localStorage.setItem('fm_messages', JSON.stringify(messages));
+            console.log('Database saved');
+        }
+        
         // Initialize
         function init() {
             console.log('=== INIT ===');
             loadTheme();
             updateThemeButton();
-            loadUsers();
-            loadMessages();
+            initDatabase();
             checkAuth();
             renderMessages();
             renderOnlineUsers();
@@ -560,18 +591,17 @@
         
         // Theme
         function loadTheme() {
-            const saved = localStorage.getItem('mwc_theme');
+            const saved = localStorage.getItem('fm_theme');
             if (saved) {
                 currentTheme = saved;
                 document.body.dataset.theme = saved;
-                document.getElementById('themeSelect').value = saved;
             }
         }
         
         function setTheme(theme) {
             currentTheme = theme;
             document.body.dataset.theme = theme;
-            localStorage.setItem('mwc_theme', theme);
+            localStorage.setItem('fm_theme', theme);
             updateThemeButton();
         }
         
@@ -585,54 +615,21 @@
         
         function updateThemeButton() {
             const btn = document.getElementById('themeBtn');
-            if (currentTheme === 'dark') {
-                btn.textContent = '🌙';
-            } else {
-                btn.textContent = '☀️';
+            if (btn) {
+                btn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
             }
-        }
-        
-        // Load users
-        function loadUsers() {
-            const saved = localStorage.getItem('mwc_users');
-            if (saved) {
-                users = JSON.parse(saved);
-            } else {
-                users = {};
-                saveUsers();
-            }
-        }
-        
-        function saveUsers() {
-            localStorage.setItem('mwc_users', JSON.stringify(users));
-        }
-        
-        // Load messages
-        function loadMessages() {
-            const saved = localStorage.getItem('mwc_messages');
-            if (saved) {
-                messages = JSON.parse(saved);
-            } else {
-                messages = [];
-                saveMessages();
-            }
-        }
-        
-        function saveMessages() {
-            localStorage.setItem('mwc_messages', JSON.stringify(messages));
         }
         
         // Auth
         function checkAuth() {
             console.log('=== CHECK AUTH ===');
-            const saved = localStorage.getItem('mwc_currentUser');
+            const saved = localStorage.getItem('fm_currentUser');
             console.log('Saved user:', saved);
-            if (saved) {
+            if (saved && users[saved]) {
                 currentUser = saved;
-                if (users[currentUser]) {
-                    users[currentUser].online = true;
-                    saveUsers();
-                }
+                users[currentUser].online = true;
+                users[currentUser].lastSeen = Date.now();
+                saveUsers();
                 updateUserUI();
             } else {
                 showAuthModal();
@@ -676,6 +673,7 @@
             }
             
             if (isRegister) {
+                // Register new user
                 if (users[username]) {
                     alert('Пользователь уже существует');
                     return;
@@ -684,19 +682,24 @@
                 users[username] = {
                     password: hashCode(password || '123'),
                     online: true,
-                    avatar: username[0].toUpperCase()
+                    avatar: username[0].toUpperCase(),
+                    createdAt: Date.now(),
+                    lastSeen: Date.now(),
+                    messageCount: 0
                 };
                 saveUsers();
                 
                 currentUser = username;
-                localStorage.setItem('mwc_currentUser', username);
+                localStorage.setItem('fm_currentUser', username);
                 
                 hideAuthModal();
                 updateUserUI();
                 renderOnlineUsers();
                 
                 addSystemMessage(`${username} присоединился к чату`);
+                console.log('User registered:', username);
             } else {
+                // Login
                 if (!users[username]) {
                     alert('Пользователь не найден');
                     return;
@@ -708,14 +711,16 @@
                 }
                 
                 users[username].online = true;
+                users[username].lastSeen = Date.now();
                 saveUsers();
                 
                 currentUser = username;
-                localStorage.setItem('mwc_currentUser', username);
+                localStorage.setItem('fm_currentUser', username);
                 
                 hideAuthModal();
                 updateUserUI();
                 renderOnlineUsers();
+                console.log('User logged in:', username);
             }
         }
         
@@ -728,10 +733,10 @@
         }
         
         function updateUserUI() {
-            if (currentUser) {
+            if (currentUser && users[currentUser]) {
                 document.getElementById('userName').textContent = currentUser;
                 document.getElementById('userStatus').textContent = 'В сети';
-                document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+                document.getElementById('userAvatar').textContent = users[currentUser].avatar || currentUser[0].toUpperCase();
             } else {
                 document.getElementById('userName').textContent = 'Гость';
                 document.getElementById('userStatus').textContent = 'Не авторизован';
@@ -742,12 +747,23 @@
         function logout() {
             if (currentUser && users[currentUser]) {
                 users[currentUser].online = false;
+                users[currentUser].lastSeen = Date.now();
                 saveUsers();
             }
             currentUser = null;
-            localStorage.removeItem('mwc_currentUser');
+            localStorage.removeItem('fm_currentUser');
             updateUserUI();
             showAuthModal();
+        }
+        
+        // Users
+        function saveUsers() {
+            localStorage.setItem('fm_users', JSON.stringify(users));
+        }
+        
+        // Messages
+        function saveMessages() {
+            localStorage.setItem('fm_messages', JSON.stringify(messages));
         }
         
         function addMessage(user, text) {
