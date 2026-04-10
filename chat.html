@@ -803,75 +803,149 @@
             messages.forEach((msg, i) => {
                 const time = new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 const colorClass = userColors[msg.user];
+                const msgId = msg.id || msg.time;
                 
                 if (msg.user !== lastUser) {
                     if (i > 0) html += '</div>';
-                    html += `<div class="message msg-color-${colorClass}" data-index="${i}" ontouchstart="handleTouchStart(event, ${i})" ontouchmove="handleTouchMove(event, ${i})" ontouchend="handleTouchEnd(event, ${i})"><div class="swipe-hint">↩️</div><div class="message-header"><span class="message-author user-color-${colorClass}">${msg.user}</span><span class="message-time">${time}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                    html += `
+                        <div class="message msg-color-${colorClass}" 
+                             data-msg-id="${msgId}" 
+                             data-msg-user="${msg.user}" 
+                             data-msg-text="${escapeHtml(msg.text)}">
+                            <div class="message-reply-action">
+                                <span class="message-reply-icon">↩️</span>
+                            </div>
+                            <div class="message-header">
+                                <span class="message-author user-color-${colorClass}">${msg.user}</span>
+                                <span class="message-time">${time}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                        </div>`;
                 } else {
-                    html += `<div class="message msg-color-${colorClass}" style="margin-top:4px;padding:6px 10px;background:var(--bg-light);" data-index="${i}" ontouchstart="handleTouchStart(event, ${i})" ontouchmove="handleTouchMove(event, ${i})" ontouchend="handleTouchEnd(event, ${i})"><div class="swipe-hint">↩️</div><div class="message-text">${escapeHtml(msg.text)}</div></div>`;
+                    html += `
+                        <div class="message msg-color-${colorClass}" 
+                             style="margin-top:4px;padding:6px 10px;background:var(--bg-light);"
+                             data-msg-id="${msgId}" 
+                             data-msg-user="${msg.user}" 
+                             data-msg-text="${escapeHtml(msg.text)}">
+                            <div class="message-reply-action">
+                                <span class="message-reply-icon">↩️</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                        </div>`;
                 }
                 lastUser = msg.user;
             });
             
             container.innerHTML = html;
+            
+            // Add swipe handlers
+            addSwipeHandlers();
+            
             container.scrollTop = container.scrollHeight;
         }
         
-        // Swipe to reply
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let isSwiping = false;
-        let swipedIndex = -1;
-        
-        function handleTouchStart(e, index) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            isSwiping = false;
-            swipedIndex = -1;
+        // Swipe handlers (Telegram style)
+        function addSwipeHandlers() {
+            const messages = document.querySelectorAll('.message');
+            
+            messages.forEach(msg => {
+                let startX = 0;
+                let startY = 0;
+                let currentX = 0;
+                let isSwiping = false;
+                let isScrolling = false;
+                
+                // Touch start
+                msg.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    currentX = 0;
+                    isSwiping = false;
+                    isScrolling = false;
+                }, { passive: true });
+                
+                // Touch move
+                msg.addEventListener('touchmove', (e) => {
+                    if (isScrolling) return;
+                    
+                    currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY;
+                    
+                    const diffX = startX - currentX;
+                    const diffY = startY - currentY;
+                    
+                    // Vertical scroll - cancel swipe
+                    if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) {
+                        isScrolling = true;
+                        return;
+                    }
+                    
+                    // Horizontal swipe
+                    if (diffX > 20) {
+                        isSwiping = true;
+                        const translate = Math.min(diffX, 60);
+                        msg.style.transform = `translateX(-${translate}px)`;
+                        msg.classList.add('swiping');
+                    }
+                }, { passive: true });
+                
+                // Touch end
+                msg.addEventListener('touchend', (e) => {
+                    if (isScrolling) return;
+                    
+                    const diffX = startX - currentX;
+                    
+                    // Swipe threshold: 60px
+                    if (isSwiping && diffX > 60) {
+                        // Trigger reply
+                        const user = msg.dataset.msgUser;
+                        const text = msg.dataset.msgText;
+                        replyToMessage(user, text);
+                    }
+                    
+                    // Reset
+                    msg.style.transform = '';
+                    msg.classList.remove('swiping');
+                    
+                    startX = 0;
+                    startY = 0;
+                    isSwiping = false;
+                }, { passive: true });
+                
+                // Mouse events for desktop (click to reply)
+                msg.addEventListener('click', (e) => {
+                    // Only if not on mobile
+                    if (window.innerWidth >= 1024 && !e.target.closest('.message-reply-action')) {
+                        // Double click to reply on desktop
+                    }
+                });
+                
+                // Double click to reply (desktop)
+                msg.addEventListener('dblclick', (e) => {
+                    e.preventDefault();
+                    const user = msg.dataset.msgUser;
+                    const text = msg.dataset.msgText;
+                    replyToMessage(user, text);
+                });
+            });
         }
         
-        function handleTouchMove(e, index) {
-            if (!touchStartX) return;
-            
-            const touchX = e.touches[0].clientX;
-            const touchY = e.touches[0].clientY;
-            const diffX = touchStartX - touchX;
-            const diffY = Math.abs(touchStartY - touchY);
-            
-            // Only horizontal swipe
-            if (diffY > 30) return;
-            
-            // Swipe left (reply)
-            if (diffX > 30) {
-                isSwiping = true;
-                const msg = e.target.closest('.message');
-                if (msg) {
-                    msg.classList.add('swiping');
-                }
-            }
-        }
-        
-        function handleTouchEnd(e, index) {
-            if (isSwiping && swipedIndex === -1) {
-                // Get message data
-                const messages = lastMessages;
-                if (messages && messages[index]) {
-                    const msg = messages[index];
-                    replyToMessage(msg.user, msg.text);
-                }
-            }
-            
-            // Reset
-            const msgs = document.querySelectorAll('.message');
-            msgs.forEach(m => m.classList.remove('swiping'));
-            isSwiping = false;
-            touchStartX = 0;
-        }
-        
+        // Reply function
         function replyToMessage(user, text) {
             const input = document.getElementById('messageInput');
-            input.value = `> ${user}: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}\n\n`;
+            const quote = text.length > 100 ? text.substring(0, 100) + '...' : text;
+            input.value = `> ${user}: ${quote}\n\n`;
             input.focus();
+            
+            // Visual feedback
+            const btn = document.querySelector('.send-btn');
+            if (btn) {
+                btn.textContent = '↩️ Ответить';
+                setTimeout(() => {
+                    btn.textContent = '→';
+                }, 2000);
+            }
         }
         
         function escapeHtml(text) {
