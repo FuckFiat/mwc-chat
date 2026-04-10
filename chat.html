@@ -482,6 +482,8 @@
         let currentUser = null;
         let currentTheme = 'dark';
         let pollInterval = null;
+        let lastMessages = [];
+        let lastUsers = {};
         
         // Initialize
         async function init() {
@@ -559,7 +561,8 @@
         // Messages
         async function loadMessages() {
             const messages = await apiGet('/messages');
-            if (messages) {
+            if (messages && JSON.stringify(messages) !== JSON.stringify(lastMessages)) {
+                lastMessages = messages;
                 renderMessages(messages);
             }
         }
@@ -608,7 +611,11 @@
                 `;
             }).join('');
             
-            container.scrollTop = container.scrollHeight;
+            // Smooth scroll to bottom
+            const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+            if (isScrolledToBottom) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
         }
         
         function escapeHtml(text) {
@@ -626,7 +633,8 @@
         // Users
         async function loadUsers() {
             const users = await apiGet('/users');
-            if (users) {
+            if (users && JSON.stringify(users) !== JSON.stringify(lastUsers)) {
+                lastUsers = users;
                 renderOnlineUsers(users);
             }
         }
