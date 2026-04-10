@@ -400,11 +400,41 @@
             resize: none;
             min-height: 36px;
             max-height: 100px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         
         .input-wrapper textarea:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), inset 0 0 8px rgba(0, 255, 0, 0.1);
+            animation: matrix-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes matrix-pulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), inset 0 0 8px rgba(0, 255, 0, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 255, 0, 0.5), inset 0 0 12px rgba(0, 255, 0, 0.2);
+            }
+        }
+        
+        /* Matrix typing effect */
+        .matrix-cursor {
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Light theme adjustment */
+        [data-theme="light"] .input-wrapper textarea:focus {
+            border-color: #00aa00;
+            box-shadow: 0 0 15px rgba(0, 170, 0, 0.3), inset 0 0 8px rgba(0, 170, 0, 0.1);
         }
         
         .send-btn {
@@ -1174,6 +1204,44 @@
             for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
             return hash.toString();
         }
+        
+        // Matrix typing effect
+        let matrixTimeout = null;
+        let lastTextLength = 0;
+        
+        function initMatrixEffect() {
+            const input = document.getElementById('messageInput');
+            if (!input) return;
+            
+            input.addEventListener('input', (e) => {
+                const currentLength = input.value.length;
+                
+                // Only trigger effect when typing (not deleting)
+                if (currentLength > lastTextLength) {
+                    // Matrix green flash effect
+                    input.style.textShadow = '0 0 8px #00ff00';
+                    input.style.color = '#00ff00';
+                    
+                    clearTimeout(matrixTimeout);
+                    matrixTimeout = setTimeout(() => {
+                        input.style.textShadow = '';
+                        input.style.color = '';
+                    }, 100);
+                }
+                
+                lastTextLength = currentLength;
+            });
+            
+            // Green cursor on focus
+            input.addEventListener('focus', () => {
+                input.style.caretColor = '#00ff00';
+            });
+        }
+        
+        // Init on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initMatrixEffect, 500);
+        });
         
         function logout() {
             if (currentUser) apiPost(`/users/${currentUser}/online`, { online: false });
