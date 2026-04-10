@@ -92,6 +92,68 @@
             justify-content: space-between;
             padding: 0 10px;
             font-size: 12px;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .connection-status {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .connection-status:hover {
+            background: var(--bg-highlight);
+        }
+        
+        .online-popover {
+            position: absolute;
+            top: 100%;
+            right: 10px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            min-width: 150px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .online-popover.show {
+            display: block;
+        }
+        
+        .online-popover-title {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .online-user-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px;
+            font-size: 11px;
+        }
+        
+        .online-user-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--online);
+            flex-shrink: 0;
         }
         
         .theme-btn {
@@ -606,9 +668,13 @@
         <div class="top-bar">
             <div class="logo" onclick="toggleTheme()" style="cursor: pointer;" title="Переключить тему">⚡ Fucking Miners</div>
             <div class="top-bar-right">
-                <div class="connection-status" id="connectionStatus">
+                <div class="connection-status" id="connectionStatus" onclick="toggleOnlinePopover()">
                     <span class="status-indicator"></span>
                     <span>Подключено</span>
+                </div>
+                <div class="online-popover" id="onlinePopover">
+                    <div class="online-popover-title">Онлайн</div>
+                    <div id="onlineUsersList"></div>
                 </div>
                 <div class="user-info" id="userInfoBox">
                     <div class="user-avatar" id="userAvatar">?</div>
@@ -700,6 +766,42 @@
                 document.body.setAttribute('data-theme', 'light');
                 const logo = document.querySelector('.logo');
                 if (logo) logo.textContent = '☀️ Fucking Miners';
+            }
+        }
+        
+        // Online popover
+        function toggleOnlinePopover() {
+            const popover = document.getElementById('onlinePopover');
+            if (popover) {
+                popover.classList.toggle('show');
+                updateOnlineUsers();
+            }
+        }
+        
+        // Close popover when clicking outside
+        document.addEventListener('click', (e) => {
+            const popover = document.getElementById('onlinePopover');
+            const status = document.getElementById('connectionStatus');
+            if (popover && !popover.contains(e.target) && !status.contains(e.target)) {
+                popover.classList.remove('show');
+            }
+        });
+        
+        function updateOnlineUsers() {
+            const container = document.getElementById('onlineUsersList');
+            if (!container || !lastUsers) return;
+            
+            const onlineUsers = Object.keys(lastUsers).filter(u => lastUsers[u].online);
+            
+            if (onlineUsers.length === 0) {
+                container.innerHTML = '<div class="online-user-item"><span style="color: var(--text-dim);">Никого нет</span></div>';
+            } else {
+                container.innerHTML = onlineUsers.map(user => `
+                    <div class="online-user-item">
+                        <span class="online-user-dot"></span>
+                        <span>${user}</span>
+                    </div>
+                `).join('');
             }
         }
         
@@ -967,6 +1069,12 @@
             if (users && JSON.stringify(users) !== JSON.stringify(lastUsers)) {
                 lastUsers = users;
                 renderUsers(users);
+                
+                // Update online popover if open
+                const popover = document.getElementById('onlinePopover');
+                if (popover && popover.classList.contains('show')) {
+                    updateOnlineUsers();
+                }
             }
         }
         
@@ -975,6 +1083,24 @@
             const onlineUsers = Object.keys(users).filter(u => users[u].online);
             document.getElementById('onlineCount').textContent = `(${onlineUsers.length})`;
             list.innerHTML = onlineUsers.map(u => `<div class="user-item"><div class="user-avatar-small">${users[u].avatar||u[0]}</div><div class="user-name-small">${u}</div><div class="status-dot"></div></div>`).join('');
+        }
+        
+        function updateOnlineUsers() {
+            const container = document.getElementById('onlineUsersList');
+            if (!container || !lastUsers) return;
+            
+            const onlineUsers = Object.keys(lastUsers).filter(u => lastUsers[u].online);
+            
+            if (onlineUsers.length === 0) {
+                container.innerHTML = '<div class="online-user-item"><span style="color: var(--text-dim);">Никого нет</span></div>';
+            } else {
+                container.innerHTML = onlineUsers.map(user => `
+                    <div class="online-user-item">
+                        <span class="online-user-dot"></span>
+                        <span>${user}</span>
+                    </div>
+                `).join('');
+            }
         }
         
         function switchAuth() {
