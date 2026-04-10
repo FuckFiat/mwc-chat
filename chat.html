@@ -112,6 +112,21 @@
             --font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
         }
         
+        [data-theme="terminal-pro"] {
+            --bg: #1a1b26;
+            --bg-card: #1a1b26;
+            --bg-input: #1a1b26;
+            --text: #a9b1d6;
+            --text-dim: #565f89;
+            --accent: #7aa2f7;
+            --accent-alt: #7dcfff;
+            --online: #9ece6a;
+            --border: #292e42;
+            --message-bg: #24283b;
+            --author-color: #bb9af7;
+            --font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -572,6 +587,94 @@
             border-radius: 0;
             border: 3px solid #000;
         }
+        
+        /* Terminal Pro theme special - Zulip style */
+        [data-theme="terminal-pro"] .container {
+            display: grid;
+            grid-template-columns: 200px 1fr 220px;
+        }
+        
+        [data-theme="terminal-pro"] .main {
+            border-right: none;
+        }
+        
+        [data-theme="terminal-pro"] .theme-bar {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 15px;
+        }
+        
+        [data-theme="terminal-pro"] .theme-btn {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+        
+        [data-theme="terminal-pro"] .chat-header {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 15px;
+        }
+        
+        [data-theme="terminal-pro"] .chat-title {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 14px;
+        }
+        
+        [data-theme="terminal-pro"] .online-panel {
+            width: 220px;
+            border-left: 1px solid var(--border);
+            border-right: none;
+        }
+        
+        [data-theme="terminal-pro"] .online-header {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 12px;
+            padding: 10px;
+        }
+        
+        [data-theme="terminal-pro"] .message {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-left: 3px solid var(--accent);
+            background: var(--message-bg);
+        }
+        
+        [data-theme="terminal-pro"] .message-author {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 13px;
+        }
+        
+        [data-theme="terminal-pro"] .message-text {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 13px;
+        }
+        
+        [data-theme="terminal-pro"] .online-user {
+            padding: 8px;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 12px;
+        }
+        
+        [data-theme="terminal-pro"] .online-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+        
+        [data-theme="terminal-pro"] .online-name {
+            font-size: 12px;
+        }
+        
+        [data-theme="terminal-pro"] .online-status {
+            font-size: 10px;
+        }
+        
+        @media (max-width: 1024px) {
+            [data-theme="terminal-pro"] .container {
+                grid-template-columns: 1fr;
+            }
+            [data-theme="terminal-pro"] .online-panel {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body data-theme="cyberpunk">
@@ -583,6 +686,7 @@
         <button class="theme-btn" onclick="setTheme('matrix')">🟢 Matrix</button>
         <button class="theme-btn" onclick="setTheme('github')">🐙 GitHub</button>
         <button class="theme-btn" onclick="setTheme('brutal')">⬛ Brutal</button>
+        <button class="theme-btn" onclick="setTheme('terminal-pro')">🖥️ Terminal Pro</button>
         <button class="btn-send" onclick="logout()" style="padding: 8px 16px; font-size: 12px; margin-left: auto;">Выход</button>
     </div>
     
