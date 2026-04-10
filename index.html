@@ -587,6 +587,9 @@
             renderOnlineUsers();
             startPolling();
             console.log('=== INIT COMPLETE ===');
+            console.log('Current user:', currentUser);
+            console.log('Messages:', messages);
+            console.log('Users:', users);
         }
         
         // Theme
@@ -761,9 +764,23 @@
             localStorage.setItem('fm_users', JSON.stringify(users));
         }
         
+        function loadUsers() {
+            const saved = localStorage.getItem('fm_users');
+            if (saved) {
+                users = JSON.parse(saved);
+            }
+        }
+        
         // Messages
         function saveMessages() {
             localStorage.setItem('fm_messages', JSON.stringify(messages));
+        }
+        
+        function loadMessages() {
+            const saved = localStorage.getItem('fm_messages');
+            if (saved) {
+                messages = JSON.parse(saved);
+            }
         }
         
         function addMessage(user, text) {
@@ -813,6 +830,12 @@
             }
             
             console.log('Rendering', messages.length, 'messages');
+            console.log('Messages array:', messages);
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 50px;">Нет сообщений. Начни первым!</div>';
+                return;
+            }
             
             container.innerHTML = messages.map(msg => {
                 const avatar = (users[msg.user] && users[msg.user].avatar) || (msg.user && msg.user[0]) || '?';
@@ -830,7 +853,7 @@
             }).join('');
             
             container.scrollTop = container.scrollHeight;
-            console.log('Messages rendered');
+            console.log('Messages rendered successfully');
         }
         
         function escapeHtml(text) {
@@ -898,8 +921,17 @@
         // Polling
         function startPolling() {
             setInterval(() => {
-                loadMessages();
-                loadUsers();
+                // Reload from localStorage
+                const savedUsers = localStorage.getItem('fm_users');
+                const savedMessages = localStorage.getItem('fm_messages');
+                
+                if (savedUsers) {
+                    users = JSON.parse(savedUsers);
+                }
+                if (savedMessages) {
+                    messages = JSON.parse(savedMessages);
+                }
+                
                 renderMessages();
                 renderOnlineUsers();
             }, 2000);
