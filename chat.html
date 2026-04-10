@@ -301,15 +301,19 @@
         }
         
         .message {
-            margin-bottom: 10px;
-            padding: 8px 10px;
+            margin-bottom: 12px;
+            padding: 12px 14px;
             background: var(--bg-light);
-            border-radius: 4px;
-            border-left: 2px solid var(--accent);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
             position: relative;
             touch-action: pan-y;
             user-select: none;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        
+        .message:hover {
+            background: var(--bg-highlight);
         }
         
         .message.swiping {
@@ -335,43 +339,73 @@
             opacity: 1;
         }
         
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        
         .message-author {
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .message-time {
-            font-size: 10px;
+            font-size: 11px;
             color: var(--text-dim);
         }
         
-        /* User colors - light dark tones */
-        .user-color-0 { color: #a8d8ea; } /* Light blue */
-        .user-color-1 { color: #aa96da; } /* Light purple */
-        .user-color-2 { color: #fcbad3; } /* Light pink */
-        .user-color-3 { color: #a8e6cf; } /* Light green */
-        .user-color-4 { color: #ffd3b6; } /* Light orange */
-        .user-color-5 { color: #dcedc1; } /* Light lime */
-        .user-color-6 { color: #c9b1ff; } /* Light violet */
-        .user-color-7 { color: #b5ead7; } /* Light mint */
-        .user-color-8 { color: #ffc6ff; } /* Light magenta */
-        .user-color-9 { color: #bdb2ff; } /* Light indigo */
+        /* User colors - brighter for readability */
+        .user-color-0 { color: #4db8ff; } /* Blue */
+        .user-color-1 { color: #b388ff; } /* Purple */
+        .user-color-2 { color: #ff66b2; } /* Pink */
+        .user-color-3 { color: #4dff88; } /* Green */
+        .user-color-4 { color: #ff9944; } /* Orange */
+        .user-color-5 { color: #b8ff66; } /* Lime */
+        .user-color-6 { color: #d9a3ff; } /* Violet */
+        .user-color-7 { color: #66ffcc; } /* Mint */
+        .user-color-8 { color: #ff80ff; } /* Magenta */
+        .user-color-9 { color: #a388ff; } /* Indigo */
         
-        .msg-color-0 { border-left-color: #a8d8ea; background: rgba(168, 216, 234, 0.05); }
-        .msg-color-1 { border-left-color: #aa96da; background: rgba(170, 150, 218, 0.05); }
-        .msg-color-2 { border-left-color: #fcbad3; background: rgba(252, 186, 211, 0.05); }
-        .msg-color-3 { border-left-color: #a8e6cf; background: rgba(168, 230, 207, 0.05); }
-        .msg-color-4 { border-left-color: #ffd3b6; background: rgba(255, 211, 182, 0.05); }
-        .msg-color-5 { border-left-color: #dcedc1; background: rgba(220, 237, 193, 0.05); }
-        .msg-color-6 { border-left-color: #c9b1ff; background: rgba(201, 177, 255, 0.05); }
-        .msg-color-7 { border-left-color: #b5ead7; background: rgba(181, 234, 215, 0.05); }
-        .msg-color-8 { border-left-color: #ffc6ff; background: rgba(255, 198, 255, 0.05); }
-        .msg-color-9 { border-left-color: #bdb2ff; background: rgba(189, 178, 255, 0.05); }
+        .msg-color-0 { border-left-color: #4db8ff; background: rgba(77, 184, 255, 0.08); }
+        .msg-color-1 { border-left-color: #b388ff; background: rgba(179, 136, 255, 0.08); }
+        .msg-color-2 { border-left-color: #ff66b2; background: rgba(255, 102, 178, 0.08); }
+        .msg-color-3 { border-left-color: #4dff88; background: rgba(77, 255, 136, 0.08); }
+        .msg-color-4 { border-left-color: #ff9944; background: rgba(255, 153, 68, 0.08); }
+        .msg-color-5 { border-left-color: #b8ff66; background: rgba(184, 255, 102, 0.08); }
+        .msg-color-6 { border-left-color: #d9a3ff; background: rgba(217, 163, 255, 0.08); }
+        .msg-color-7 { border-left-color: #66ffcc; background: rgba(102, 255, 204, 0.08); }
+        .msg-color-8 { border-left-color: #ff80ff; background: rgba(255, 128, 255, 0.08); }
+        .msg-color-9 { border-left-color: #a388ff; background: rgba(163, 136, 255, 0.08); }
+        
+        /* Light theme - more contrast */
+        [data-theme="light"] .user-color-0 { color: #0066cc; }
+        [data-theme="light"] .user-color-1 { color: #7b1fa2; }
+        [data-theme="light"] .user-color-2 { color: #c2185b; }
+        [data-theme="light"] .user-color-3 { color: #2e7d32; }
+        [data-theme="light"] .user-color-4 { color: #e65100; }
+        [data-theme="light"] .user-color-5 { color: #558b2f; }
+        [data-theme="light"] .user-color-6 { color: #512da8; }
+        [data-theme="light"] .user-color-7 { color: #00796b; }
+        [data-theme="light"] .user-color-8 { color: #ad1457; }
+        [data-theme="light"] .user-color-9 { color: #283593; }
+        
+        [data-theme="light"] .msg-color-0 { border-left-color: #0066cc; background: rgba(0, 102, 204, 0.06); }
+        [data-theme="light"] .msg-color-1 { border-left-color: #7b1fa2; background: rgba(123, 31, 162, 0.06); }
+        [data-theme="light"] .msg-color-2 { border-left-color: #c2185b; background: rgba(194, 24, 91, 0.06); }
+        [data-theme="light"] .msg-color-3 { border-left-color: #2e7d32; background: rgba(46, 125, 50, 0.06); }
+        [data-theme="light"] .msg-color-4 { border-left-color: #e65100; background: rgba(230, 81, 0, 0.06); }
+        [data-theme="light"] .msg-color-5 { border-left-color: #558b2f; background: rgba(85, 139, 47, 0.06); }
+        [data-theme="light"] .msg-color-6 { border-left-color: #512da8; background: rgba(81, 45, 168, 0.06); }
+        [data-theme="light"] .msg-color-7 { border-left-color: #00796b; background: rgba(0, 121, 107, 0.06); }
+        [data-theme="light"] .msg-color-8 { border-left-color: #ad1457; background: rgba(173, 20, 87, 0.06); }
+        [data-theme="light"] .msg-color-9 { border-left-color: #283593; background: rgba(40, 53, 147, 0.06); }
         
         .message-text {
-            font-size: 12px;
-            line-height: 1.5;
-            color: var(--text-bright);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
             word-wrap: break-word;
         }
         
